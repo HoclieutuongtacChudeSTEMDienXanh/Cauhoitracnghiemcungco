@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Câu Hỏi Trắc nghiệm Củng Cố Mạng Điện Sản Xuất Quy Mô Nhỏ</title>
+    <!-- Tải Tailwind CSS để tạo giao diện đẹp và responsive -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Thiết lập font Inter mặc định và màu nền */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        /* Style cho câu hỏi đã trả lời */
+        .answered-correct {
+            border: 2px solid #10b981; /* Xanh lá */
+        }
+        .answered-incorrect {
+            border: 2px solid #ef4444; /* Đỏ */
+        }
+        /* Hiệu ứng khi hover/focus vào đáp án */
+        .answer-option:hover {
+            background-color: #f3f4f6;
+        }
+        .answer-option.selected {
+            background-color: #d1e5f8; /* Xanh nhạt khi chọn */
+            border-color: #3b82f6;
+        }
+        /* Style cho nút xem kết quả */
+        #submit-btn {
+            transition: all 0.2s ease-in-out;
+        }
+        /* Ẩn phần Rationale/Giải thích cho đến khi xem kết quả */
+        .rationale {
+            display: none;
+        }
+        /* Hiển thị màu xanh cho đáp án đúng khi xem kết quả */
+        .show-results .is-correct {
+            background-color: #d1fae5; /* Màu nền xanh lá nhạt */
+            border-color: #059669 !important;
+            font-weight: 600;
+        }
+        /* Hiển thị màu đỏ cho đáp án sai đã chọn khi xem kết quả */
+        .show-results .answered-incorrect.selected:not(.is-correct) {
+            background-color: #fee2e2; /* Màu nền đỏ nhạt */
+            border-color: #dc2626 !important;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+
+    <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-xl p-6 sm:p-10">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl sm:text-4xl text-gray-800 border-b-4 border-blue-500 pb-2 inline-block">
+                Câu hỏi trắc nghiệm Củng Cố: Mạng Điện Sản Xuất Quy Mô Nhỏ
+            </h1>
+            <p class="text-lg text-gray-600 mt-2">18 Câu Hỏi Trắc Nghiệm</p>
+        </header>
+
+        <div id="quiz-container">
+            <!-- Các câu hỏi sẽ được render tại đây -->
+        </div>
+
+        <div class="mt-8 pt-4 border-t border-gray-200 flex justify-end">
+            <button id="submit-btn" 
+                    class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 ease-in-out"
+                    disabled>
+                Xem Kết Quả (0/18)
+            </button>
+        </div>
+
+        <!-- Vùng hiển thị kết quả -->
+        <div id="result-summary" class="mt-8 p-4 bg-gray-100 rounded-lg hidden">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Kết Quả Bài Làm</h2>
+            <p id="score-text" class="text-xl font-semibold text-blue-600"></p>
+            <p id="feedback-text" class="text-lg text-gray-700 mt-2"></p>
+        </div>
+    </div>
+
+    <script>
+        // Dữ liệu 18 câu hỏi từ phản hồi trước
+        const quizData = {
+          "questions": [
+            {
+              "questionNumber": 1,
+              "question": "Mạng điện sản xuất quy mô nhỏ cấp điện cho tải tiêu thụ với công suất khoảng bao nhiêu?",
+              "answerOptions": [
+                {"text": "Vài chục kW đến vài trăm kW", "rationale": "Công suất tiêu thụ từ vài chục kW đến vài trăm kW là đặc trưng xác định quy mô của mạng điện sản xuất nhỏ.", "isCorrect": true},
+                {"text": "Vài trăm kW đến vài nghìn kW", "rationale": "Mức công suất này thường thuộc về mạng điện sản xuất quy mô lớn hơn hoặc trung bình.", "isCorrect": false},
+                {"text": "Vài nghìn kW đến vài trăm nghìn kW", "rationale": "Mức công suất này là rất lớn, không phù hợp với định nghĩa 'quy mô nhỏ'.", "isCorrect": false},
+                {"text": "Vài trăm nghìn kW đến vài triệu Kw", "rationale": "Mức công suất này là của hệ thống điện quốc gia hoặc các nhà máy lớn, không phải quy mô nhỏ.", "isCorrect": false}
+              ]
+            },
+            {
+              "questionNumber": 2,
+              "question": "Tải của mạng điện sản xuất quy mô nhỏ bao gồm những thành phần chính nào?",
+              "answerOptions": [
+                {"text": "Các loại động cơ điện, các thiết bị điện, các dụng cụ sửa chữa điện", "rationale": "Dụng cụ sửa chữa điện không phải là tải điện năng chính của mạng điện sản xuất.", "isCorrect": false},
+                {"text": "Các thiết bị điện, các dụng cụ sửa chữa điện, các thiết bị chiếu sáng", "rationale": "Dụng cụ sửa chữa điện không phải là tải điện năng chính của mạng điện sản xuất.", "isCorrect": false},
+                {"text": "Các thiết bị chiếu sáng, các loại động cơ điện, các dụng cụ sửa chữa điện", "rationale": "Dụng cụ sửa chữa điện không phải là tải điện năng chính của mạng điện sản xuất.", "isCorrect": false},
+                {"text": "Các loại động cơ điện, các thiết bị điện, các thiết bị chiếu sáng", "rationale": "Tải chính bao gồm động cơ (tải động lực), các thiết bị khác (như máy nén, lò nhiệt, v.v.) và hệ thống chiếu sáng.", "isCorrect": true}
+              ]
+            },
+            {
+              "questionNumber": 3,
+              "question": "Đặc điểm thứ nhất của mạng điện sản xuất quy mô nhỏ là gì?",
+              "answerOptions": [
+                {"text": "Tải phân bố tập trung", "rationale": "Đây là đặc điểm về sự phân bố của tải điện trong cơ sở sản xuất quy mô nhỏ.", "isCorrect": true},
+                {"text": "Dùng máy biến áp riêng hoặc lấy điện từ đường dây hạ áp có điện áp dây/pha là 380/220V", "rationale": "Đây là đặc điểm thứ hai, liên quan đến nguồn cấp điện và điện áp sử dụng.", "isCorrect": false},
+                {"text": "Mạng điện dùng cho các thiết bị sản xuất và mạng điện chiếu sáng hoạt động độc lập", "rationale": "Đây là đặc điểm thứ ba, liên quan đến cách thức hoạt động của các mạng điện nhánh.", "isCorrect": false},
+                {"text": "Dùng máy biến áp riêng hoặc lấy điện từ đường dây hạ áp có điện áp dây/pha là 380/110V", "rationale": "Điện áp tiêu chuẩn thường dùng trong sản xuất ở Việt Nam là 380/220V, không phải 380/110V.", "isCorrect": false}
+              ]
+            },
+            {
+              "questionNumber": 4,
+              "question": "Đặc điểm thứ hai của mạng điện sản xuất quy mô nhỏ là gì?",
+              "answerOptions": [
+                {"text": "Tải phân bố tập trung", "rationale": "Đây là đặc điểm thứ nhất, không phải đặc điểm thứ hai.", "isCorrect": false},
+                {"text": "Dùng máy biến áp riêng hoặc lấy điện từ đường dây hạ áp có điện áp dây/pha là 380/220V", "rationale": "Đây là đặc điểm về nguồn cấp và điện áp sử dụng, cho thấy tính linh hoạt trong việc lấy nguồn điện.", "isCorrect": true},
+                {"text": "Mạng điện dùng cho các thiết bị sản xuất và mạng điện chiếu sáng hoạt động độc lập", "rationale": "Đây là đặc điểm thứ ba, liên quan đến tính độc lập của các mạng điện nhánh.", "isCorrect": false},
+                {"text": "Dùng máy biến áp riêng hoặc lấy điện từ đường dây hạ áp có điện áp dây/pha là 380/110V", "rationale": "Điện áp tiêu chuẩn thường dùng trong sản xuất ở Việt Nam là 380/220V, không phải 380/110V.", "isCorrect": false}
+              ]
+            },
+            {
+              "questionNumber": 5,
+              "question": "Đặc điểm thứ ba của mạng điện sản xuất quy mô nhỏ là gì?",
+              "answerOptions": [
+                {"text": "Tải phân bố tập trung", "rationale": "Đây là đặc điểm thứ nhất, không phải đặc điểm thứ ba.", "isCorrect": false},
+                {"text": "Dùng máy biến áp riêng hoặc lấy điện từ đường dây hạ áp có điện áp dây/pha là 380/220V", "rationale": "Đây là đặc điểm thứ hai, không phải đặc điểm thứ ba.", "isCorrect": false},
+                {"text": "Mạng điện dùng cho các thiết bị sản xuất và mạng điện chiếu sáng hoạt động độc lập", "rationale": "Đây là đặc điểm cho phép quản lý và vận hành độc lập giữa tải động lực và tải chiếu sáng.", "isCorrect": true},
+                {"text": "Dùng máy biến áp riêng hoặc lấy điện từ đường dây hạ áp có điện áp dây/pha là 380/110V", "rationale": "Điện áp tiêu chuẩn thường dùng trong sản xuất ở Việt Nam là 380/220V, không phải 380/110V.", "isCorrect": false}
+              ]
+            },
+            {
+              "questionNumber": 6,
+              "question": "Thiết bị nào trong mạng điện sản xuất quy mô nhỏ **không** được đặt ở phân xưởng sản xuất?",
+              "answerOptions": [
+                {"text": "Tủ điện phân phối tổng", "rationale": "Tủ điện phân phối tổng thường được đặt gần nguồn cấp (trạm biến áp) để nhận và phân phối điện cho toàn bộ cơ sở sản xuất, không phải trong phân xưởng.", "isCorrect": true},
+                {"text": "Tủ điện phân phối nhánh", "rationale": "Tủ điện phân phối nhánh thường được đặt trong phân xưởng để phân phối điện cho các tủ động lực và chiếu sáng.", "isCorrect": false},
+                {"text": "Tủ điện động lực", "rationale": "Tủ điện động lực được đặt trong phân xưởng để cấp điện trực tiếp cho các thiết bị và máy móc sản xuất.", "isCorrect": false},
+                {"text": "Tủ điện chiếu sáng", "rationale": "Tủ điện chiếu sáng được đặt trong phân xưởng để cấp điện cho hệ thống đèn chiếu sáng.", "isCorrect": false}
+              ]
+            },
+            {
+              "questionNumber": 7,
+              "question": "Vai trò chính của trạm biến áp trong mạng điện sản xuất quy mô nhỏ là gì?",
+              "answerOptions": [
+                {"text": "Hạ áp từ lưới điện phân phối xuống điện áp hạ áp (380/220V)", "rationale": "Trạm biến áp thực hiện chức năng cơ bản là chuyển đổi điện áp trung thế hoặc cao thế thành điện áp hạ thế (380/220V) để sử dụng.", "isCorrect": true},
+                {"text": "Lấy điện từ tủ điện phân phối tổng để phân phối tiếp cho các tủ điện động lực và tủ điện chiếu sáng trong phân xưởng", "rationale": "Đây là vai trò của tủ điện phân phối nhánh.", "isCorrect": false},
+                {"text": "Lấy điện từ đường hạ áp 380/220V của máy biến áp để phân phối cho các tủ điện phân phối nhánh", "rationale": "Đây là vai trò của tủ điện phân phối tổng.", "isCorrect": false},
+                {"text": "Kết nối các thành phần của mạng điện (từ trạm biến áp đến các tủ điện và đến tải)", "rationale": "Đây là vai trò của dây cáp điện.", "isCorrect": false}
+              ]
+            },
+            {
+              "questionNumber": 8,
+              "question": "Vai trò của tủ điện phân phối tổng là gì?",
+              "answerOptions": [
+                {"text": "Lấy điện từ tủ điện phân phối nhánh để cấp cho tải tiêu thụ", "rationale": "Đây là vai trò của tủ điện động lực và tủ điện chiếu sáng.", "isCorrect": false},
+                {"text": "Lấy điện từ tủ điện phân phối tổng để phân phối tiếp cho các tủ điện động lực và tủ điện chiếu sáng trong phân xưởng", "rationale": "Đây là vai trò của tủ điện phân phối nhánh.", "isCorrect": false},
+                {"text": "Lấy điện từ đường hạ áp 380/220V của máy biến áp để phân phối cho các tủ điện phân phối nhánh", "rationale": "Tủ phân phối tổng là điểm nhận điện từ trạm biến áp và phân chia đến các tủ nhánh.", "isCorrect": true},
+                {"text": "Lấy nguồn điện từ tủ điện phân phối nhánh để cấp cho hệ thống chiếu sáng của phân xưởng", "rationale": "Đây là vai trò của tủ điện chiếu sáng.", "isCorrect": false}
+              ]
+            },
+            {
+              "questionNumber": 9,
+              "question": "Vai trò của tủ điện phân phối nhánh là gì?",
+              "answerOptions": [
+                {"text": "Lấy điện từ tủ điện phân phối nhánh để cấp cho tải tiêu thụ", "rationale": "Đây là vai trò của tủ điện động lực và tủ điện chiếu sáng, không phải tủ nhánh.", "isCorrect": false},
+                {"text": "Lấy điện từ tủ điện phân phối tổng để phân phối tiếp cho các tủ điện động lực và tủ điện chiếu sáng trong phân xưởng", "rationale": "Tủ nhánh nhận điện từ tủ tổng và chia thành các mạch riêng cho tải động lực và chiếu sáng trong phạm vi phân xưởng.", "isCorrect": true},
+                {"text": "Lấy điện từ đường hạ áp 380/220V của máy biến áp để phân phối cho các tủ điện phân phối nhánh", "rationale": "Đây là vai trò của tủ điện phân phối tổng.", "isCorrect": false},
+                {"text": "Lấy nguồn điện từ tủ điện phân phối nhánh để cấp cho hệ thống chiếu sáng của phân xưởng", "rationale": "Đây là vai trò của tủ điện chiếu sáng.", "isCorrect": false}
+              ]
+            },
+            {
+              "questionNumber": 10,
+              "question": "Vai trò của tủ điện động lực là gì?",
+              "answerOptions": [
+                {"text": "Lấy điện từ tủ điện phân phối nhánh để cấp cho tải tiêu thụ", "rationale": "Tủ động lực lấy điện từ tủ nhánh và cấp trực tiếp cho các thiết bị sản xuất (tải động lực) là tải tiêu thụ chính.", "isCorrect": true},
+                {"text": "Lấy điện từ tủ điện phân phối tổng để phân phối tiếp cho các tủ điện động lực và tủ điện chiếu sáng trong phân xưởng", "rationale": "Đây là vai trò của tủ điện phân phối nhánh.", "isCorrect": false},
+                {"text": "Lấy điện từ đường hạ áp 380/220V của máy biến áp để phân phối cho các tủ điện phân phối nhánh", "rationale": "Đây là vai trò của tủ điện phân phối tổng.", "isCorrect": false},
+                {"text": "Lấy nguồn điện từ tủ điện phân phối nhánh để cấp cho hệ thống chiếu sáng của phân xưởng", "rationale": "Đây là vai trò của tủ điện chiếu sáng.", "isCorrect": false}
+              ]
+            },
+            {
+              "questionNumber": 11,
+              "question": "Vai trò của tủ điện chiếu sáng là gì?",
+              "answerOptions": [
+                {"text": "Lấy điện từ tủ điện phân phối nhánh để cấp cho tải tiêu thụ", "rationale": "Tủ chiếu sáng lấy điện từ tủ nhánh để cấp cho hệ thống chiếu sáng, đây là một loại tải tiêu thụ.", "isCorrect": false},
+                {"text": "Lấy điện từ tủ điện phân phối tổng để phân phối tiếp cho các tủ điện động lực và tủ điện chiếu sáng trong phân xưởng", "rationale": "Đây là vai trò của tủ điện phân phối nhánh.", "isCorrect": false},
+                {"text": "Lấy điện từ đường hạ áp 380/220V của máy biến áp để phân phối cho các tủ điện phân phối nhánh", "rationale": "Đây là vai trò của tủ điện phân phối tổng.", "isCorrect": false},
+                {"text": "Lấy nguồn điện từ tủ điện phân phối nhánh để cấp cho hệ thống chiếu sáng của phân xưởng", "rationale": "Vai trò chính của tủ này là cung cấp nguồn điện và bảo vệ cho mạch điện chiếu sáng.", "isCorrect": true}
+              ]
+            },
+            {
+              "questionNumber": 12,
+              "question": "Vai trò chính của dây cáp điện trong mạng điện sản xuất quy mô nhỏ là gì?",
+              "answerOptions": [
+                {"text": "Kết nối các thành phần của mạng điện (từ trạm biến áp đến các tủ điện và đến tải)", "rationale": "Dây cáp điện là phương tiện vật lí để truyền tải điện năng, kết nối tất cả các thiết bị trong mạng điện.", "isCorrect": true},
+                {"text": "Bảo vệ mạng điện khi xảy ra quá tải, ngắn mạch", "rationale": "Đây là vai trò của các thiết bị bảo vệ như cầu chì, aptomat.", "isCorrect": false},
+                {"text": "Đóng – cắt nguồn điện cấp cho các tủ điện động lực, tủ điện chiếu sáng", "rationale": "Đây là vai trò của các thiết bị đóng - cắt trong các tủ điện.", "isCorrect": false},
+                {"text": "Lấy điện từ đường hạ áp 380/220V của máy biến áp để phân phối cho các tủ điện phân phối nhánh", "rationale": "Đây là vai trò của tủ điện phân phối tổng.", "isCorrect": false}
+              ]
+            },
+            {
+              "questionNumber": 13,
+              "question": "Trong tủ điện phân phối nhánh **không** có thiết bị nào sau đây?",
+              "answerOptions": [
+                {"text": "Các thiết bị đóng – cắt nguồn điện cấp cho các tủ điện động lực", "rationale": "Các thiết bị này có mặt trong tủ nhánh để điều khiển nguồn cấp cho tủ động lực.", "isCorrect": false},
+                {"text": "Các thiết bị đóng – cắt nguồn điện cấp cho các tủ điện chiếu sáng", "rationale": "Các thiết bị này có mặt trong tủ nhánh để điều khiển nguồn cấp cho tủ chiếu sáng.", "isCorrect": false},
+                {"text": "Các thiết bị bảo vệ mạch điện nhánh khi xảy ra quá tải, ngắn mạch", "rationale": "Các thiết bị bảo vệ là thành phần bắt buộc trong tất cả các tủ điện phân phối.", "isCorrect": false},
+                {"text": "Các thiết bị tiêu thụ điện và các dụng cụ bảo trì và sửa chữa điện", "rationale": "Tủ điện phân phối nhánh chỉ chứa các thiết bị đóng cắt và bảo vệ, không chứa tải tiêu thụ hay dụng cụ bảo trì.", "isCorrect": true}
+              ]
+            },
+            {
+              "questionNumber": 14,
+              "question": "Phát biểu nào sau đây sai?",
+              "answerOptions": [
+                {"text": "Tủ phân phối nhận điện từ trạm biến áp để phân chia tới các tủ động lực, tủ chiếu sáng của các phân xưởng.", "rationale": "Tủ phân phối tổng nhận điện từ trạm biến áp, nhưng phân chia tới các tủ phân phối nhánh, không trực tiếp tới tủ động lực, tủ chiếu sáng.", "isCorrect": true},
+                {"text": "Tủ động lực nhận điện từ tủ phân phối cung cấp cho tủ chiếu sáng", "rationale": "Tủ động lực nhận điện từ tủ nhánh và cấp cho tải động lực, không cấp điện cho tủ chiếu sáng.", "isCorrect": false},
+                {"text": "Tủ chiếu sáng nhận điện từ tủ phân phối cung cấp cho mạch chiếu sáng của các phân xưởng", "rationale": "Tủ chiếu sáng nhận điện từ tủ phân phối nhánh để cấp cho mạch chiếu sáng.", "isCorrect": false},
+                {"text": "Trạm biến áp cấp điện cho cơ sở sản xuất", "rationale": "Trạm biến áp có nhiệm vụ hạ áp và cấp điện cho toàn bộ cơ sở sản xuất.", "isCorrect": false}
+              ]
+            },
+            {
+              "questionNumber": 15,
+              "question": "Thao tác đóng mạch điện theo thứ tự đúng trong mạng điện sản xuất quy mô nhỏ là gì?",
+              "answerOptions": [
+                {"text": "Biến áp hạ áp &rarr;tủ động lực &rarr; tủ phân phối &rarr; tủ chiếu sáng", "rationale": "Thứ tự này sai, việc đóng điện phải theo chiều từ nguồn đến tải.", "isCorrect": false},
+                {"text": "Biến áp hạ áp &rarr; tủ chiếu sáng &rarr; tủ phân phối &rarr; tủ động lực", "rationale": "Thứ tự này sai, việc đóng điện phải theo chiều từ nguồn đến tải: Trạm biến áp &rarr; Tủ phân phối tổng &rarr; Tủ phân phối nhánh &rarr; Tủ động lực/Tủ chiếu sáng.", "isCorrect": false},
+                {"text": "Biến áp hạ áp &rarr; tủ phân phối &rarr; tủ động lực &rarr; tủ chiếu sáng", "rationale": "Thứ tự này phản ánh chiều đi của điện năng: nguồn (Trạm biến áp), rồi đến các cấp phân phối (Tủ tổng, Tủ nhánh) và cuối cùng là tải (Tủ động lực, Tủ chiếu sáng).", "isCorrect": true},
+                {"text": "Biến áp hạ áp &rarr; tủ động lực &rarr; tủ chiếu sáng &rarr; tủ phân phối", "rationale": "Thứ tự này sai, việc đóng điện phải theo chiều từ nguồn đến tải.", "isCorrect": false}
+              ]
+            },
+            {
+              "questionNumber": 16,
+              "question": "Thao tác cắt mạch điện theo thứ tự đúng trong mạng điện sản xuất quy mô nhỏ là gì?",
+              "answerOptions": [
+                {"text": "Tủ động lực &rarr; tủ chiếu sáng &rarr; tủ phân phối &rarr; biến áp hạ áp", "rationale": "Việc cắt điện phải theo chiều ngược lại với đóng điện, tức là từ tải về nguồn (Tủ động lực/Tủ chiếu sáng &rarr; Tủ phân phối nhánh &rarr; Tủ phân phối tổng &rarr; Trạm biến áp).", "isCorrect": false},
+                {"text": "Tủ chiếu sáng &rarr; tủ động lực &rarr; tủ phân phối &rarr; biến áp hạ áp", "rationale": "Đây là thứ tự cắt điện từ tải về nguồn: tải (Tủ chiếu sáng, Tủ động lực) &rarr; cấp phân phối (Tủ phân phối nhánh, Tủ phân phối tổng) &rarr; nguồn (Trạm biến áp).", "isCorrect": true},
+                {"text": "Tủ động lực &rarr; tủ chiếu sáng &rarr; biến áp hạ áp &rarr; tủ phân phối", "rationale": "Thứ tự này bỏ qua cấp phân phối tổng và nhánh, không đúng theo quy trình.", "isCorrect": false},
+                {"text": "Tủ chiếu sáng &rarr; tủ phân phối &rarr; tủ động lực &rarr; biến áp hạ áp", "rationale": "Thứ tự này sai, Tủ động lực và Tủ chiếu sáng là các thiết bị ở cuối chuỗi phân phối nên cần cắt trước.", "isCorrect": false}
+              ]
+            },
+            {
+              "questionNumber": 17,
+              "question": "Tại sao quy trình cắt điện lại được thực hiện theo chiều ngược lại so với quy trình đóng điện (từ tải về nguồn)?",
+              "answerOptions": [
+                {"text": "Để thuận tiện trong quá trình sử dụng", "rationale": "Lí do chính liên quan đến an toàn và kĩ thuật, không phải thuận tiện.", "isCorrect": false},
+                {"text": "Để đảm bảo an toàn điện, giảm rủi ro chập điện", "rationale": "Việc cắt điện từ tải về nguồn giúp ngắt nguồn cung cấp điện cho các phần tử hạ nguồn đang có tải, tránh hồ quang và đảm bảo an toàn tối đa cho người thao tác và thiết bị.", "isCorrect": true},
+                {"text": "Để tránh hiện tượng bị quá tải điện", "rationale": "Quá tải xảy ra khi sử dụng, không phải là lí do chính cho quy trình cắt điện.", "isCorrect": false},
+                {"text": "Để tránh bị đứt dây cáp điện", "rationale": "Quy trình cắt/đóng không trực tiếp gây đứt dây cáp điện.", "isCorrect": false}
+              ]
+            },
+            {
+              "questionNumber": 18,
+              "question": "Tải của mạng điện sản xuất quy mô nhỏ **không** bao gồm loại nào dưới đây?",
+              "answerOptions": [
+                {"text": "Các loại động cơ điện", "rationale": "Động cơ điện là tải động lực, là tải chính của mạng điện sản xuất.", "isCorrect": false},
+                {"text": "Các thiết bị điện", "rationale": "Các thiết bị điện (như máy nén, hệ thống gia nhiệt...) là một phần của tải động lực.", "isCorrect": false},
+                {"text": "Các thiết bị chiếu sáng", "rationale": "Thiết bị chiếu sáng là tải chiếu sáng, là một phần của tải mạng điện sản xuất.", "isCorrect": false},
+                {"text": "Các dụng cụ điện", "rationale": "Các dụng cụ điện (như máy khoan cầm tay, dụng cụ sửa chữa...) được cắm vào ổ cắm, không phải là tải được đấu nối cố định và là thành phần cấu trúc chính trong mạng điện.", "isCorrect": true}
+              ]
+            }
+          ]
+        };
+
+        const quizContainer = document.getElementById('quiz-container');
+        const submitBtn = document.getElementById('submit-btn');
+        const resultSummary = document.getElementById('result-summary');
+        const scoreText = document.getElementById('score-text');
+        const feedbackText = document.getElementById('feedback-text');
+        
+        // Lưu trữ lựa chọn của người dùng
+        const userAnswers = {};
+        const totalQuestions = quizData.questions.length;
+        let answeredCount = 0;
+        let isSubmitted = false;
+
+        // Hàm cập nhật trạng thái nút Submit
+        const updateSubmitButton = () => {
+            answeredCount = Object.keys(userAnswers).length;
+            submitBtn.textContent = `Xem Kết Quả (${answeredCount}/${totalQuestions})`;
+            submitBtn.disabled = answeredCount < totalQuestions;
+        };
+
+        // Hàm xử lý khi người dùng chọn đáp án
+        const handleAnswerClick = (qIndex, selectedOptionIndex) => {
+            if (isSubmitted) return; // Không cho phép chọn lại sau khi nộp bài
+
+            const questionElement = document.getElementById(`q-${qIndex}`);
+            const options = questionElement.querySelectorAll('.answer-option');
+            
+            // Xóa trạng thái đã chọn trước đó (nếu có)
+            options.forEach(opt => opt.classList.remove('selected'));
+
+            // Đánh dấu lựa chọn mới
+            const selectedOptionElement = options[selectedOptionIndex];
+            selectedOptionElement.classList.add('selected');
+
+            // Lưu trữ câu trả lời
+            userAnswers[qIndex] = selectedOptionIndex;
+
+            // Cập nhật nút Submit
+            updateSubmitButton();
+        };
+
+        // Hàm render giao diện bài Quiz
+        const renderQuiz = () => {
+            quizData.questions.forEach((q, qIndex) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.id = `q-${qIndex}`;
+                questionDiv.className = 'mb-8 p-6 bg-white border border-gray-200 rounded-xl shadow-sm';
+                
+                // Câu hỏi
+                const questionTitle = document.createElement('h3');
+                questionTitle.className = 'text-xl font-semibold text-gray-800 mb-4';
+                questionTitle.innerHTML = `Câu ${q.questionNumber}: ${q.question}`;
+                questionDiv.appendChild(questionTitle);
+
+                // Các tùy chọn đáp án
+                q.answerOptions.forEach((option, oIndex) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'answer-option p-3 mb-2 border border-gray-300 rounded-lg cursor-pointer transition duration-100 ease-in-out';
+                    optionDiv.innerHTML = `<span class="font-medium mr-2 text-blue-600">${String.fromCharCode(65 + oIndex)}.</span> ${option.text}`;
+                    
+                    optionDiv.onclick = () => handleAnswerClick(qIndex, oIndex);
+
+                    questionDiv.appendChild(optionDiv);
+                });
+
+                // Vùng giải thích (Rationale)
+                const rationaleDiv = document.createElement('div');
+                rationaleDiv.className = 'rationale mt-4 p-3 border-l-4 border-gray-400 bg-gray-50 rounded-r-lg text-sm text-gray-700';
+                rationaleDiv.id = `rationale-${qIndex}`;
+                questionDiv.appendChild(rationaleDiv);
+
+                quizContainer.appendChild(questionDiv);
+            });
+        };
+
+        // Hàm xử lý nộp bài và hiển thị kết quả
+        const handleSubmit = () => {
+            if (isSubmitted) return;
+            isSubmitted = true;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Đã Nộp Bài';
+            submitBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+            submitBtn.classList.add('bg-gray-500');
+
+            let correctCount = 0;
+            quizContainer.classList.add('show-results');
+
+            quizData.questions.forEach((q, qIndex) => {
+                const selectedOptionIndex = userAnswers[qIndex];
+                const questionElement = document.getElementById(`q-${qIndex}`);
+                const options = questionElement.querySelectorAll('.answer-option');
+                const rationaleDiv = document.getElementById(`rationale-${qIndex}`);
+
+                // Hiển thị phần giải thích
+                rationaleDiv.style.display = 'block';
+                rationaleDiv.innerHTML = '<strong>Giải thích:</strong> ';
+
+                let isCorrect = false;
+                
+                q.answerOptions.forEach((option, oIndex) => {
+                    const optionElement = options[oIndex];
+                    
+                    // 1. Đánh dấu đáp án đúng
+                    if (option.isCorrect) {
+                        optionElement.classList.add('is-correct');
+                        rationaleDiv.innerHTML += option.rationale;
+                        if (selectedOptionIndex === oIndex) {
+                            isCorrect = true;
+                        }
+                    }
+
+                    // 2. Đánh dấu đáp án mà người dùng đã chọn
+                    if (selectedOptionIndex === oIndex) {
+                        optionElement.classList.add('selected');
+                        if (isCorrect) {
+                            optionElement.classList.add('answered-correct');
+                        } else {
+                            optionElement.classList.add('answered-incorrect');
+                        }
+                    }
+                });
+
+                if (isCorrect) {
+                    correctCount++;
+                }
+
+                // Vô hiệu hóa tất cả các sự kiện click
+                options.forEach(opt => opt.onclick = null);
+            });
+
+            // Hiển thị tóm tắt kết quả
+            resultSummary.classList.remove('hidden');
+            scoreText.textContent = `Bạn đã trả lời đúng ${correctCount} trên tổng số ${totalQuestions} câu hỏi.`;
+            
+            if (correctCount === totalQuestions) {
+                feedbackText.textContent = 'Xuất sắc! Bạn đã nắm vững kiến thức về Mạng điện Sản xuất Quy mô Nhỏ.';
+                feedbackText.classList.add('text-green-600');
+            } else if (correctCount >= totalQuestions * 0.75) {
+                feedbackText.textContent = 'Rất tốt! Bạn cần xem lại một vài điểm nhỏ để đạt điểm tối đa.';
+                feedbackText.classList.add('text-yellow-600');
+            } else {
+                feedbackText.textContent = 'Bạn nên xem lại toàn bộ bài giảng để củng cố kiến thức tốt hơn.';
+                feedbackText.classList.add('text-red-600');
+            }
+        };
+
+        // Gắn sự kiện cho nút Submit
+        submitBtn.addEventListener('click', handleSubmit);
+
+        // Khởi tạo bài Quiz khi tải trang
+        document.addEventListener('DOMContentLoaded', renderQuiz);
+    </script>
+
+</body>
+</html>

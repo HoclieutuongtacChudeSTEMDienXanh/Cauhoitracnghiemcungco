@@ -1,424 +1,935 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Câu Hỏi Trắc nghiệm Củng Cố Mạng Điện Sản Xuất Quy Mô Nhỏ</title>
-    <!-- Tải Tailwind CSS để tạo giao diện đẹp và responsive -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Thiết lập font Inter mặc định và màu nền */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bài Kiểm Tra Trắc Nghiệm STEM - Điện Xanh</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            eco: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              900: '#064e3b',
+            }
+          }
         }
-        /* Style cho câu hỏi đã trả lời */
-        .answered-correct {
-            border: 2px solid #10b981; /* Xanh lá */
-        }
-        .answered-incorrect {
-            border: 2px solid #ef4444; /* Đỏ */
-        }
-        /* Hiệu ứng khi hover/focus vào đáp án */
-        .answer-option:hover {
-            background-color: #f3f4f6;
-        }
-        .answer-option.selected {
-            background-color: #d1e5f8; /* Xanh nhạt khi chọn */
-            border-color: #3b82f6;
-        }
-        /* Style cho nút xem kết quả */
-        #submit-btn {
-            transition: all 0.2s ease-in-out;
-        }
-        /* Ẩn phần Rationale/Giải thích cho đến khi xem kết quả */
-        .rationale {
-            display: none;
-        }
-        /* Hiển thị màu xanh cho đáp án đúng khi xem kết quả */
-        .show-results .is-correct {
-            background-color: #d1fae5; /* Màu nền xanh lá nhạt */
-            border-color: #059669 !important;
-            font-weight: 600;
-        }
-        /* Hiển thị màu đỏ cho đáp án sai đã chọn khi xem kết quả */
-        .show-results .answered-incorrect.selected:not(.is-correct) {
-            background-color: #fee2e2; /* Màu nền đỏ nhạt */
-            border-color: #dc2626 !important;
-        }
-    </style>
+      }
+    };
+  </script>
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+    /* Tùy chỉnh thanh cuộn nhẹ nhàng */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
 </head>
-<body class="p-4 sm:p-8">
-
-    <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-xl p-6 sm:p-10">
-        <header class="text-center mb-10">
-            <h1 class="text-3xl sm:text-4xl text-gray-800 pb-2 inline-block">
-                DỰ ÁN: MÔ PHỎNG MẠNG ĐIỆN SẢN XUẤT QUY MÔ NHỎ TỪ KHẢO SÁT MẠNG ĐIỆN TRƯỜNG HỌC
+<body class="bg-slate-50 text-slate-800 antialiased selection:bg-emerald-200 selection:text-emerald-900">
+  <!-- Thanh tiến độ cố định trên cùng -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 py-3">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+        <div class="flex items-center gap-2.5">
+          <span class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-emerald-600 text-white font-bold text-sm shadow-sm">
+            ⚡
+          </span>
+          <div>
+            <h1 class="text-sm sm:text-base font-bold text-slate-900 leading-tight">
+              STEM Điện Xanh — Trắc Nghiệm 20 Câu
             </h1>
-            <p class="text-lg text-gray-600 mt-2">CÂU HỎI TRẮC NGHIỆM CỦNG CỐ</p>
-            <h3 class="text-base sm:text-lg text-blue-600 pt-1 border-t-4 border-blue-500 text-left">
-                GV: Nguyễn Quang Vinh - Trường THPT Bình Khánh
-            </h3>
-        </header>
-
-        <div id="quiz-container">
-            <!-- Các câu hỏi sẽ được render tại đây -->
+            <p class="text-xs text-slate-500 hidden sm:block">
+              An toàn điện • Tiết kiệm năng lượng • Linh kiện điện tử
+            </p>
+          </div>
         </div>
 
-        <div class="mt-8 pt-4 border-t border-gray-200 flex justify-end">
-            <button id="submit-btn" 
-                    class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 ease-in-out"
-                    disabled>
-                Xem Kết Quả (0/18)
-            </button>
+        <div class="flex items-center gap-3">
+          <span id="progress-text" class="text-xs sm:text-sm font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
+            Đã làm: 0 / 20 câu
+          </span>
+          <button
+            id="top-submit-btn"
+            type="button"
+            onclick="handleSubmitClick()"
+            class="text-xs sm:text-sm font-semibold px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white transition shadow-sm"
+          >
+            Nộp bài
+          </button>
         </div>
+      </div>
 
-        <!-- Vùng hiển thị kết quả -->
-        <div id="result-summary" class="mt-8 p-4 bg-gray-100 rounded-lg hidden">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Kết Quả Bài Làm</h2>
-            <p id="score-text" class="text-xl font-semibold text-blue-600"></p>
-            <p id="feedback-text" class="text-lg text-gray-700 mt-2"></p>
-        </div>
+      <!-- Thanh tiến độ trực quan -->
+      <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+        <div
+          id="progress-bar"
+          class="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-300"
+          style="width: 0%;"
+        ></div>
+      </div>
     </div>
+  </header>
 
-    <script>
-        // Dữ liệu 18 câu hỏi từ phản hồi trước
-        const quizData = {
-          "questions": [
-            {
-              "questionNumber": 1,
-              "question": "Mạng điện sản xuất quy mô nhỏ cấp điện cho tải tiêu thụ với công suất khoảng bao nhiêu?",
-              "answerOptions": [
-                {"text": "Vài chục kW đến vài trăm kW", "rationale": "Công suất tiêu thụ từ vài chục kW đến vài trăm kW là đặc trưng xác định quy mô của mạng điện sản xuất nhỏ.", "isCorrect": true},
-                {"text": "Vài trăm kW đến vài nghìn kW", "rationale": "Mức công suất này thường thuộc về mạng điện sản xuất quy mô lớn hơn hoặc trung bình.", "isCorrect": false},
-                {"text": "Vài nghìn kW đến vài trăm nghìn kW", "rationale": "Mức công suất này là rất lớn, không phù hợp với định nghĩa 'quy mô nhỏ'.", "isCorrect": false},
-                {"text": "Vài trăm nghìn kW đến vài triệu Kw", "rationale": "Mức công suất này là của hệ thống điện quốc gia hoặc các nhà máy lớn, không phải quy mô nhỏ.", "isCorrect": false}
-              ]
-            },
-            {
-              "questionNumber": 2,
-              "question": "Tải của mạng điện sản xuất quy mô nhỏ bao gồm những thành phần chính nào?",
-              "answerOptions": [
-                {"text": "Các loại động cơ điện, các thiết bị điện, các dụng cụ sửa chữa điện", "rationale": "Dụng cụ sửa chữa điện không phải là tải điện năng chính của mạng điện sản xuất.", "isCorrect": false},
-                {"text": "Các thiết bị điện, các dụng cụ sửa chữa điện, các thiết bị chiếu sáng", "rationale": "Dụng cụ sửa chữa điện không phải là tải điện năng chính của mạng điện sản xuất.", "isCorrect": false},
-                {"text": "Các thiết bị chiếu sáng, các loại động cơ điện, các dụng cụ sửa chữa điện", "rationale": "Dụng cụ sửa chữa điện không phải là tải điện năng chính của mạng điện sản xuất.", "isCorrect": false},
-                {"text": "Các loại động cơ điện, các thiết bị điện, các thiết bị chiếu sáng", "rationale": "Tải chính bao gồm động cơ (tải động lực), các thiết bị khác (như máy nén, lò nhiệt, v.v.) và hệ thống chiếu sáng.", "isCorrect": true}
-              ]
-            },
-            {
-              "questionNumber": 3,
-              "question": "Đặc điểm thứ nhất của mạng điện sản xuất quy mô nhỏ là gì?",
-              "answerOptions": [
-                {"text": "Tải phân bố tập trung", "rationale": "Đây là đặc điểm về sự phân bố của tải điện trong cơ sở sản xuất quy mô nhỏ.", "isCorrect": true},
-                {"text": "Dùng máy biến áp riêng hoặc lấy điện từ đường dây hạ áp có điện áp dây/pha là 380/220V", "rationale": "Đây là đặc điểm thứ hai, liên quan đến nguồn cấp điện và điện áp sử dụng.", "isCorrect": false},
-                {"text": "Mạng điện dùng cho các thiết bị sản xuất và mạng điện chiếu sáng hoạt động độc lập", "rationale": "Đây là đặc điểm thứ ba, liên quan đến cách thức hoạt động của các mạng điện nhánh.", "isCorrect": false},
-                {"text": "Dùng máy biến áp riêng hoặc lấy điện từ đường dây hạ áp có điện áp dây/pha là 380/110V", "rationale": "Điện áp tiêu chuẩn thường dùng trong sản xuất ở Việt Nam là 380/220V, không phải 380/110V.", "isCorrect": false}
-              ]
-            },
-            {
-              "questionNumber": 4,
-              "question": "Đặc điểm thứ hai của mạng điện sản xuất quy mô nhỏ là gì?",
-              "answerOptions": [
-                {"text": "Tải phân bố tập trung", "rationale": "Đây là đặc điểm thứ nhất, không phải đặc điểm thứ hai.", "isCorrect": false},
-                {"text": "Dùng máy biến áp riêng hoặc lấy điện từ đường dây hạ áp có điện áp dây/pha là 380/220V", "rationale": "Đây là đặc điểm về nguồn cấp và điện áp sử dụng, cho thấy tính linh hoạt trong việc lấy nguồn điện.", "isCorrect": true},
-                {"text": "Mạng điện dùng cho các thiết bị sản xuất và mạng điện chiếu sáng hoạt động độc lập", "rationale": "Đây là đặc điểm thứ ba, liên quan đến tính độc lập của các mạng điện nhánh.", "isCorrect": false},
-                {"text": "Dùng máy biến áp riêng hoặc lấy điện từ đường dây hạ áp có điện áp dây/pha là 380/110V", "rationale": "Điện áp tiêu chuẩn thường dùng trong sản xuất ở Việt Nam là 380/220V, không phải 380/110V.", "isCorrect": false}
-              ]
-            },
-            {
-              "questionNumber": 5,
-              "question": "Đặc điểm thứ ba của mạng điện sản xuất quy mô nhỏ là gì?",
-              "answerOptions": [
-                {"text": "Tải phân bố tập trung", "rationale": "Đây là đặc điểm thứ nhất, không phải đặc điểm thứ ba.", "isCorrect": false},
-                {"text": "Dùng máy biến áp riêng hoặc lấy điện từ đường dây hạ áp có điện áp dây/pha là 380/220V", "rationale": "Đây là đặc điểm thứ hai, không phải đặc điểm thứ ba.", "isCorrect": false},
-                {"text": "Mạng điện dùng cho các thiết bị sản xuất và mạng điện chiếu sáng hoạt động độc lập", "rationale": "Đây là đặc điểm cho phép quản lý và vận hành độc lập giữa tải động lực và tải chiếu sáng.", "isCorrect": true},
-                {"text": "Dùng máy biến áp riêng hoặc lấy điện từ đường dây hạ áp có điện áp dây/pha là 380/110V", "rationale": "Điện áp tiêu chuẩn thường dùng trong sản xuất ở Việt Nam là 380/220V, không phải 380/110V.", "isCorrect": false}
-              ]
-            },
-            {
-              "questionNumber": 6,
-              "question": "Thiết bị nào trong mạng điện sản xuất quy mô nhỏ **không** được đặt ở phân xưởng sản xuất?",
-              "answerOptions": [
-                {"text": "Tủ điện phân phối tổng", "rationale": "Tủ điện phân phối tổng thường được đặt gần nguồn cấp (trạm biến áp) để nhận và phân phối điện cho toàn bộ cơ sở sản xuất, không phải trong phân xưởng.", "isCorrect": true},
-                {"text": "Tủ điện phân phối nhánh", "rationale": "Tủ điện phân phối nhánh thường được đặt trong phân xưởng để phân phối điện cho các tủ động lực và chiếu sáng.", "isCorrect": false},
-                {"text": "Tủ điện động lực", "rationale": "Tủ điện động lực được đặt trong phân xưởng để cấp điện trực tiếp cho các thiết bị và máy móc sản xuất.", "isCorrect": false},
-                {"text": "Tủ điện chiếu sáng", "rationale": "Tủ điện chiếu sáng được đặt trong phân xưởng để cấp điện cho hệ thống đèn chiếu sáng.", "isCorrect": false}
-              ]
-            },
-            {
-              "questionNumber": 7,
-              "question": "Vai trò chính của trạm biến áp trong mạng điện sản xuất quy mô nhỏ là gì?",
-              "answerOptions": [
-                {"text": "Hạ áp từ lưới điện phân phối xuống điện áp hạ áp (380/220V)", "rationale": "Trạm biến áp thực hiện chức năng cơ bản là chuyển đổi điện áp trung thế hoặc cao thế thành điện áp hạ thế (380/220V) để sử dụng.", "isCorrect": true},
-                {"text": "Lấy điện từ tủ điện phân phối tổng để phân phối tiếp cho các tủ điện động lực và tủ điện chiếu sáng trong phân xưởng", "rationale": "Đây là vai trò của tủ điện phân phối nhánh.", "isCorrect": false},
-                {"text": "Lấy điện từ đường hạ áp 380/220V của máy biến áp để phân phối cho các tủ điện phân phối nhánh", "rationale": "Đây là vai trò của tủ điện phân phối tổng.", "isCorrect": false},
-                {"text": "Kết nối các thành phần của mạng điện (từ trạm biến áp đến các tủ điện và đến tải)", "rationale": "Đây là vai trò của dây cáp điện.", "isCorrect": false}
-              ]
-            },
-            {
-              "questionNumber": 8,
-              "question": "Vai trò của tủ điện phân phối tổng là gì?",
-              "answerOptions": [
-                {"text": "Lấy điện từ tủ điện phân phối nhánh để cấp cho tải tiêu thụ", "rationale": "Đây là vai trò của tủ điện động lực và tủ điện chiếu sáng.", "isCorrect": false},
-                {"text": "Lấy điện từ tủ điện phân phối tổng để phân phối tiếp cho các tủ điện động lực và tủ điện chiếu sáng trong phân xưởng", "rationale": "Đây là vai trò của tủ điện phân phối nhánh.", "isCorrect": false},
-                {"text": "Lấy điện từ đường hạ áp 380/220V của máy biến áp để phân phối cho các tủ điện phân phối nhánh", "rationale": "Tủ phân phối tổng là điểm nhận điện từ trạm biến áp và phân chia đến các tủ nhánh.", "isCorrect": true},
-                {"text": "Lấy nguồn điện từ tủ điện phân phối nhánh để cấp cho hệ thống chiếu sáng của phân xưởng", "rationale": "Đây là vai trò của tủ điện chiếu sáng.", "isCorrect": false}
-              ]
-            },
-            {
-              "questionNumber": 9,
-              "question": "Vai trò của tủ điện phân phối nhánh là gì?",
-              "answerOptions": [
-                {"text": "Lấy điện từ tủ điện phân phối nhánh để cấp cho tải tiêu thụ", "rationale": "Đây là vai trò của tủ điện động lực và tủ điện chiếu sáng, không phải tủ nhánh.", "isCorrect": false},
-                {"text": "Lấy điện từ tủ điện phân phối tổng để phân phối tiếp cho các tủ điện động lực và tủ điện chiếu sáng trong phân xưởng", "rationale": "Tủ nhánh nhận điện từ tủ tổng và chia thành các mạch riêng cho tải động lực và chiếu sáng trong phạm vi phân xưởng.", "isCorrect": true},
-                {"text": "Lấy điện từ đường hạ áp 380/220V của máy biến áp để phân phối cho các tủ điện phân phối nhánh", "rationale": "Đây là vai trò của tủ điện phân phối tổng.", "isCorrect": false},
-                {"text": "Lấy nguồn điện từ tủ điện phân phối nhánh để cấp cho hệ thống chiếu sáng của phân xưởng", "rationale": "Đây là vai trò của tủ điện chiếu sáng.", "isCorrect": false}
-              ]
-            },
-            {
-              "questionNumber": 10,
-              "question": "Vai trò của tủ điện động lực là gì?",
-              "answerOptions": [
-                {"text": "Lấy điện từ tủ điện phân phối nhánh để cấp cho tải tiêu thụ", "rationale": "Tủ động lực lấy điện từ tủ nhánh và cấp trực tiếp cho các thiết bị sản xuất (tải động lực) là tải tiêu thụ chính.", "isCorrect": true},
-                {"text": "Lấy điện từ tủ điện phân phối tổng để phân phối tiếp cho các tủ điện động lực và tủ điện chiếu sáng trong phân xưởng", "rationale": "Đây là vai trò của tủ điện phân phối nhánh.", "isCorrect": false},
-                {"text": "Lấy điện từ đường hạ áp 380/220V của máy biến áp để phân phối cho các tủ điện phân phối nhánh", "rationale": "Đây là vai trò của tủ điện phân phối tổng.", "isCorrect": false},
-                {"text": "Lấy nguồn điện từ tủ điện phân phối nhánh để cấp cho hệ thống chiếu sáng của phân xưởng", "rationale": "Đây là vai trò của tủ điện chiếu sáng.", "isCorrect": false}
-              ]
-            },
-            {
-              "questionNumber": 11,
-              "question": "Vai trò của tủ điện chiếu sáng là gì?",
-              "answerOptions": [
-                {"text": "Lấy điện từ tủ điện phân phối nhánh để cấp cho tải tiêu thụ", "rationale": "Tủ chiếu sáng lấy điện từ tủ nhánh để cấp cho hệ thống chiếu sáng, đây là một loại tải tiêu thụ.", "isCorrect": false},
-                {"text": "Lấy điện từ tủ điện phân phối tổng để phân phối tiếp cho các tủ điện động lực và tủ điện chiếu sáng trong phân xưởng", "rationale": "Đây là vai trò của tủ điện phân phối nhánh.", "isCorrect": false},
-                {"text": "Lấy điện từ đường hạ áp 380/220V của máy biến áp để phân phối cho các tủ điện phân phối nhánh", "rationale": "Đây là vai trò của tủ điện phân phối tổng.", "isCorrect": false},
-                {"text": "Lấy nguồn điện từ tủ điện phân phối nhánh để cấp cho hệ thống chiếu sáng của phân xưởng", "rationale": "Vai trò chính của tủ này là cung cấp nguồn điện và bảo vệ cho mạch điện chiếu sáng.", "isCorrect": true}
-              ]
-            },
-            {
-              "questionNumber": 12,
-              "question": "Vai trò chính của dây cáp điện trong mạng điện sản xuất quy mô nhỏ là gì?",
-              "answerOptions": [
-                {"text": "Kết nối các thành phần của mạng điện (từ trạm biến áp đến các tủ điện và đến tải)", "rationale": "Dây cáp điện là phương tiện vật lí để truyền tải điện năng, kết nối tất cả các thiết bị trong mạng điện.", "isCorrect": true},
-                {"text": "Bảo vệ mạng điện khi xảy ra quá tải, ngắn mạch", "rationale": "Đây là vai trò của các thiết bị bảo vệ như cầu chì, aptomat.", "isCorrect": false},
-                {"text": "Đóng – cắt nguồn điện cấp cho các tủ điện động lực, tủ điện chiếu sáng", "rationale": "Đây là vai trò của các thiết bị đóng - cắt trong các tủ điện.", "isCorrect": false},
-                {"text": "Lấy điện từ đường hạ áp 380/220V của máy biến áp để phân phối cho các tủ điện phân phối nhánh", "rationale": "Đây là vai trò của tủ điện phân phối tổng.", "isCorrect": false}
-              ]
-            },
-            {
-              "questionNumber": 13,
-              "question": "Trong tủ điện phân phối nhánh **không** có thiết bị nào sau đây?",
-              "answerOptions": [
-                {"text": "Các thiết bị đóng – cắt nguồn điện cấp cho các tủ điện động lực", "rationale": "Các thiết bị này có mặt trong tủ nhánh để điều khiển nguồn cấp cho tủ động lực.", "isCorrect": false},
-                {"text": "Các thiết bị đóng – cắt nguồn điện cấp cho các tủ điện chiếu sáng", "rationale": "Các thiết bị này có mặt trong tủ nhánh để điều khiển nguồn cấp cho tủ chiếu sáng.", "isCorrect": false},
-                {"text": "Các thiết bị bảo vệ mạch điện nhánh khi xảy ra quá tải, ngắn mạch", "rationale": "Các thiết bị bảo vệ là thành phần bắt buộc trong tất cả các tủ điện phân phối.", "isCorrect": false},
-                {"text": "Các thiết bị tiêu thụ điện và các dụng cụ bảo trì và sửa chữa điện", "rationale": "Tủ điện phân phối nhánh chỉ chứa các thiết bị đóng cắt và bảo vệ, không chứa tải tiêu thụ hay dụng cụ bảo trì.", "isCorrect": true}
-              ]
-            },
-            {
-              "questionNumber": 14,
-              "question": "Phát biểu nào sau đây sai?",
-              "answerOptions": [
-                {"text": "Tủ phân phối nhận điện từ trạm biến áp để phân chia tới các tủ động lực, tủ chiếu sáng của các phân xưởng.", "rationale": "Tủ phân phối tổng nhận điện từ trạm biến áp, nhưng phân chia tới các tủ phân phối nhánh, không trực tiếp tới tủ động lực, tủ chiếu sáng.", "isCorrect": true},
-                {"text": "Tủ động lực nhận điện từ tủ phân phối cung cấp cho tủ chiếu sáng", "rationale": "Tủ động lực nhận điện từ tủ nhánh và cấp cho tải động lực, không cấp điện cho tủ chiếu sáng.", "isCorrect": false},
-                {"text": "Tủ chiếu sáng nhận điện từ tủ phân phối cung cấp cho mạch chiếu sáng của các phân xưởng", "rationale": "Tủ chiếu sáng nhận điện từ tủ phân phối nhánh để cấp cho mạch chiếu sáng.", "isCorrect": false},
-                {"text": "Trạm biến áp cấp điện cho cơ sở sản xuất", "rationale": "Trạm biến áp có nhiệm vụ hạ áp và cấp điện cho toàn bộ cơ sở sản xuất.", "isCorrect": false}
-              ]
-            },
-            {
-              "questionNumber": 15,
-              "question": "Thao tác đóng mạch điện theo thứ tự đúng trong mạng điện sản xuất quy mô nhỏ là gì?",
-              "answerOptions": [
-                {"text": "Biến áp hạ áp &rarr;tủ động lực &rarr; tủ phân phối &rarr; tủ chiếu sáng", "rationale": "Thứ tự này sai, việc đóng điện phải theo chiều từ nguồn đến tải.", "isCorrect": false},
-                {"text": "Biến áp hạ áp &rarr; tủ chiếu sáng &rarr; tủ phân phối &rarr; tủ động lực", "rationale": "Thứ tự này sai, việc đóng điện phải theo chiều từ nguồn đến tải: Trạm biến áp &rarr; Tủ phân phối tổng &rarr; Tủ phân phối nhánh &rarr; Tủ động lực/Tủ chiếu sáng.", "isCorrect": false},
-                {"text": "Biến áp hạ áp &rarr; tủ phân phối &rarr; tủ động lực &rarr; tủ chiếu sáng", "rationale": "Thứ tự này phản ánh chiều đi của điện năng: nguồn (Trạm biến áp), rồi đến các cấp phân phối (Tủ tổng, Tủ nhánh) và cuối cùng là tải (Tủ động lực, Tủ chiếu sáng).", "isCorrect": true},
-                {"text": "Biến áp hạ áp &rarr; tủ động lực &rarr; tủ chiếu sáng &rarr; tủ phân phối", "rationale": "Thứ tự này sai, việc đóng điện phải theo chiều từ nguồn đến tải.", "isCorrect": false}
-              ]
-            },
-            {
-              "questionNumber": 16,
-              "question": "Thao tác cắt mạch điện theo thứ tự đúng trong mạng điện sản xuất quy mô nhỏ là gì?",
-              "answerOptions": [
-                {"text": "Tủ động lực &rarr; tủ chiếu sáng &rarr; tủ phân phối &rarr; biến áp hạ áp", "rationale": "Việc cắt điện phải theo chiều ngược lại với đóng điện, tức là từ tải về nguồn (Tủ động lực/Tủ chiếu sáng &rarr; Tủ phân phối nhánh &rarr; Tủ phân phối tổng &rarr; Trạm biến áp).", "isCorrect": false},
-                {"text": "Tủ chiếu sáng &rarr; tủ động lực &rarr; tủ phân phối &rarr; biến áp hạ áp", "rationale": "Đây là thứ tự cắt điện từ tải về nguồn: tải (Tủ chiếu sáng, Tủ động lực) &rarr; cấp phân phối (Tủ phân phối nhánh, Tủ phân phối tổng) &rarr; nguồn (Trạm biến áp).", "isCorrect": true},
-                {"text": "Tủ động lực &rarr; tủ chiếu sáng &rarr; biến áp hạ áp &rarr; tủ phân phối", "rationale": "Thứ tự này bỏ qua cấp phân phối tổng và nhánh, không đúng theo quy trình.", "isCorrect": false},
-                {"text": "Tủ chiếu sáng &rarr; tủ phân phối &rarr; tủ động lực &rarr; biến áp hạ áp", "rationale": "Thứ tự này sai, Tủ động lực và Tủ chiếu sáng là các thiết bị ở cuối chuỗi phân phối nên cần cắt trước.", "isCorrect": false}
-              ]
-            },
-            {
-              "questionNumber": 17,
-              "question": "Tại sao quy trình cắt điện lại được thực hiện theo chiều ngược lại so với quy trình đóng điện (từ tải về nguồn)?",
-              "answerOptions": [
-                {"text": "Để thuận tiện trong quá trình sử dụng", "rationale": "Lí do chính liên quan đến an toàn và kĩ thuật, không phải thuận tiện.", "isCorrect": false},
-                {"text": "Để đảm bảo an toàn điện, giảm rủi ro chập điện", "rationale": "Việc cắt điện từ tải về nguồn giúp ngắt nguồn cung cấp điện cho các phần tử hạ nguồn đang có tải, tránh hồ quang và đảm bảo an toàn tối đa cho người thao tác và thiết bị.", "isCorrect": true},
-                {"text": "Để tránh hiện tượng bị quá tải điện", "rationale": "Quá tải xảy ra khi sử dụng, không phải là lí do chính cho quy trình cắt điện.", "isCorrect": false},
-                {"text": "Để tránh bị đứt dây cáp điện", "rationale": "Quy trình cắt/đóng không trực tiếp gây đứt dây cáp điện.", "isCorrect": false}
-              ]
-            },
-            {
-              "questionNumber": 18,
-              "question": "Tải của mạng điện sản xuất quy mô nhỏ **không** bao gồm loại nào dưới đây?",
-              "answerOptions": [
-                {"text": "Các loại động cơ điện", "rationale": "Động cơ điện là tải động lực, là tải chính của mạng điện sản xuất.", "isCorrect": false},
-                {"text": "Các thiết bị điện", "rationale": "Các thiết bị điện (như máy nén, hệ thống gia nhiệt...) là một phần của tải động lực.", "isCorrect": false},
-                {"text": "Các thiết bị chiếu sáng", "rationale": "Thiết bị chiếu sáng là tải chiếu sáng, là một phần của tải mạng điện sản xuất.", "isCorrect": false},
-                {"text": "Các dụng cụ điện", "rationale": "Các dụng cụ điện (như máy khoan cầm tay, dụng cụ sửa chữa...) được cắm vào ổ cắm, không phải là tải được đấu nối cố định và là thành phần cấu trúc chính trong mạng điện.", "isCorrect": true}
-              ]
-            }
-          ]
-        };
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+    <!-- Banner giới thiệu ngắn gọn -->
+    <section class="bg-gradient-to-br from-emerald-700 via-emerald-600 to-teal-700 text-white rounded-2xl p-5 sm:p-7 shadow-md">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="space-y-1.5">
+          <span class="inline-block text-xs font-semibold uppercase tracking-wider bg-white/15 px-3 py-1 rounded-full">
+            Học liệu tương tác STEM
+          </span>
+          <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight">
+            Bài Kiểm Tra Chủ Đề Điện Xanh
+          </h2>
+          <p class="text-sm text-emerald-50 max-w-2xl">
+            Toàn bộ 20 câu hỏi hiển thị trên một trang duy nhất. Chọn đáp án cho từng câu, sau đó bấm <strong>Nộp bài</strong> để xem điểm số, đáp án đúng/sai và giải thích chi tiết.
+          </p>
+        </div>
+        <div class="flex sm:flex-col items-center sm:items-end justify-between bg-white/10 rounded-xl px-4 py-3 shrink-0">
+          <span class="text-xs text-emerald-100">Tổng số câu</span>
+          <span class="text-2xl font-extrabold">20 câu</span>
+        </div>
+      </div>
+    </section>
 
-        const quizContainer = document.getElementById('quiz-container');
-        const submitBtn = document.getElementById('submit-btn');
-        const resultSummary = document.getElementById('result-summary');
-        const scoreText = document.getElementById('score-text');
-        const feedbackText = document.getElementById('feedback-text');
-        
-        // Lưu trữ lựa chọn của người dùng
-        const userAnswers = {};
-        const totalQuestions = quizData.questions.length;
-        let answeredCount = 0;
-        let isSubmitted = false;
+    <!-- Hộp thông báo nhẹ nhàng (thay thế alert/confirm) -->
+    <div id="notice-banner" class="hidden rounded-2xl border p-4 text-sm font-medium transition-all"></div>
 
-        // Hàm cập nhật trạng thái nút Submit
-        const updateSubmitButton = () => {
-            answeredCount = Object.keys(userAnswers).length;
-            submitBtn.textContent = `Xem Kết Quả (${answeredCount}/${totalQuestions})`;
-            submitBtn.disabled = answeredCount < totalQuestions;
-        };
+    <!-- Bảng tổng kết kết quả sau khi nộp bài -->
+    <section id="result-summary" class="hidden bg-white rounded-2xl border-2 border-emerald-500 p-5 sm:p-7 shadow-md">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full">
+            Kết quả bài làm
+          </span>
+          <h3 id="score-heading" class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">
+            Điểm số: 0 / 10
+          </h3>
+          <p id="score-detail" class="text-sm sm:text-base text-slate-600 mt-1">
+            Trả lời đúng 0/20 câu hỏi.
+          </p>
+          <p id="score-feedback" class="text-sm font-medium text-emerald-700 mt-2"></p>
+        </div>
 
-        // Hàm xử lý khi người dùng chọn đáp án
-        const handleAnswerClick = (qIndex, selectedOptionIndex) => {
-            if (isSubmitted) return; // Không cho phép chọn lại sau khi nộp bài
+        <div class="flex flex-wrap items-center gap-3 shrink-0">
+          <button
+            type="button"
+            onclick="scrollToFirstWrong()"
+            id="jump-wrong-btn"
+            class="hidden px-4 py-2.5 rounded-xl text-sm font-semibold border border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 transition"
+          >
+            Xem câu sai đầu tiên
+          </button>
+          <button
+            type="button"
+            onclick="resetQuiz()"
+            class="px-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-900 hover:bg-slate-800 text-white transition shadow-sm"
+          >
+            Làm lại bài kiểm tra
+          </button>
+        </div>
+      </div>
+    </section>
 
-            const questionElement = document.getElementById(`q-${qIndex}`);
-            const options = questionElement.querySelectorAll('.answer-option');
-            
-            // Xóa trạng thái đã chọn trước đó (nếu có)
-            options.forEach(opt => opt.classList.remove('selected'));
+    <!-- Danh sách 20 câu hỏi trên 1 trang -->
+    <form id="quiz-form" onsubmit="event.preventDefault(); submitQuiz();" class="space-y-5">
+      <div id="questions-container" class="space-y-5"></div>
 
-            // Đánh dấu lựa chọn mới
-            const selectedOptionElement = options[selectedOptionIndex];
-            selectedOptionElement.classList.add('selected');
+      <!-- Khu vực nút Nộp bài và Làm lại ở cuối trang -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="text-center sm:text-left">
+          <p id="bottom-status" class="text-sm font-semibold text-slate-700">
+            Bạn đã trả lời 0 trên tổng số 20 câu hỏi.
+          </p>
+          <p class="text-xs text-slate-500 mt-0.5">
+            Kiểm tra lại các lựa chọn trước khi nộp bài nhé.
+          </p>
+        </div>
 
-            // Lưu trữ câu trả lời
-            userAnswers[qIndex] = selectedOptionIndex;
+        <div class="flex flex-wrap items-center justify-center gap-3 w-full sm:w-auto">
+          <button
+            type="button"
+            onclick="resetQuiz()"
+            class="w-full sm:w-auto px-5 py-3 rounded-xl text-sm font-semibold border border-slate-300 text-slate-700 hover:bg-slate-50 active:scale-[0.99] transition"
+          >
+            Làm lại
+          </button>
+          <button
+            id="bottom-submit-btn"
+            type="button"
+            onclick="handleSubmitClick()"
+            class="w-full sm:w-auto px-7 py-3 rounded-xl text-sm font-bold bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white transition shadow-md"
+          >
+            Nộp bài
+          </button>
+        </div>
+      </div>
+    </form>
+  </main>
 
-            // Cập nhật nút Submit
-            updateSubmitButton();
-        };
+  <footer class="max-w-4xl mx-auto px-4 sm:px-6 py-8 text-center text-xs text-slate-500">
+    Học liệu tương tác chủ đề STEM — Điện Xanh • Thiết kế phục vụ học tập và tự đánh giá.
+  </footer>
 
-        // Hàm render giao diện bài Quiz
-        const renderQuiz = () => {
-            quizData.questions.forEach((q, qIndex) => {
-                const questionDiv = document.createElement('div');
-                questionDiv.id = `q-${qIndex}`;
-                questionDiv.className = 'mb-8 p-6 bg-white border border-gray-200 rounded-xl shadow-sm';
-                
-                // Câu hỏi
-                const questionTitle = document.createElement('h3');
-                questionTitle.className = 'text-xl font-semibold text-gray-800 mb-4';
-                questionTitle.innerHTML = `Câu ${q.questionNumber}: ${q.question}`;
-                questionDiv.appendChild(questionTitle);
+  <script>
+    /**
+     * Dữ liệu 20 câu hỏi trắc nghiệm bám sát tài liệu "HỌC LIỆU TƯƠNG TÁC CHỦ ĐỀ STEM_ĐIỆN XANH"
+     */
+    const QUIZ_DATA = [
+      {
+        id: 1,
+        question: "An toàn điện là:",
+        options: [
+          { key: "A", text: "những quy định, quy tắc và kĩ năng cần thiết trong thiết kế và bảo dưỡng sửa chữa điện" },
+          { key: "B", text: "những quy định, quy tắc và kĩ năng cần thiết trong thiết kế và sử dụng điện" },
+          { key: "C", text: "những quy định, quy tắc và kĩ năng cần thiết trong thiết kế, sử dụng và bảo dưỡng sửa chữa điện" },
+          { key: "D", text: "những quy định, quy tắc và kĩ năng cần thiết trong sử dụng và bảo dưỡng sửa chữa điện." }
+        ],
+        correct: "C",
+        explanation: "An toàn điện bao gồm đầy đủ các quy định, quy tắc và kĩ năng cần thiết ở cả ba khâu: thiết kế, sử dụng và bảo dưỡng, sửa chữa điện."
+      },
+      {
+        id: 2,
+        question: "Nguyên nhân chính gây mất an toàn điện là:",
+        options: [
+          { key: "A", text: "Chạm trực tiếp vào phần có điện của thiết bị hay đồ dùng điện mà không dùng đồ bảo hộ và dụng cụ an toàn điện" },
+          { key: "B", text: "Sử dụng điện vào giờ cao điểm" },
+          { key: "C", text: "Bật điện liên tục cả ngày" },
+          { key: "D", text: "Sử dụng đồ dùng điện công suất lớn." }
+        ],
+        correct: "A",
+        explanation: "Chạm trực tiếp vào phần mang điện mà thiếu bảo hộ hoặc dụng cụ cách điện an toàn là nguyên nhân trực tiếp và phổ biến nhất gây điện giật."
+      },
+      {
+        id: 3,
+        question: "Để đảm bảo an toàn điện, dây dẫn và cáp điện cần:",
+        options: [
+          { key: "A", text: "Tính toán lựa chọn dây dẫn và cáp điện có thông số điện áp lớn hơn điện áp của hệ thống" },
+          { key: "B", text: "Tiết diện lõi dây phải phù hợp với công suất tiêu thụ của thiết bị" },
+          { key: "C", text: "Bố trí dây dẫn và cáp điện ở vị trí kín, khó quan sát" },
+          { key: "D", text: "Để trần đầu nối dây dẫn và cáp điện với các thiết bị." }
+        ],
+        correct: "B",
+        explanation: "Tiết diện lõi dây phù hợp với công suất giúp dây không bị quá tải, nóng chảy lớp cách điện hay chập cháy."
+      },
+      {
+        id: 4,
+        question: "Nối đất thường được sử dụng để:",
+        options: [
+          { key: "A", text: "Tránh nguy cơ bị điện giật khi các thiết bị có vỏ bằng kim loại bị rò điện" },
+          { key: "B", text: "Loại bỏ nguy cơ điện áp cao từ sét truyền qua dây dẫn điện làm chập cháy thiết bị gây hỏa hoạn" },
+          { key: "C", text: "Đóng, cắt và bảo vệ quá tải, ngắn mạch" },
+          { key: "D", text: "Đảm bảo khoảng cách an toàn với lưới điện cao áp và trạm biến áp." }
+        ],
+        correct: "A",
+        explanation: "Nối đất vỏ kim loại giúp dòng rò truyền an toàn xuống đất, giảm thiểu nguy cơ giật điện khi người chạm vào vỏ thiết bị."
+      },
+      {
+        id: 5,
+        question: "Trong sử dụng điện, việc làm gây mất an toàn điện là:",
+        options: [
+          { key: "A", text: "Không sử dụng các thiết bị hỏng, thiếu chỉ dẫn hoặc không có thiết bị bảo vệ" },
+          { key: "B", text: "Sử dụng các đồ dùng điện khi đang sạc" },
+          { key: "C", text: "Không chạm đến đồ dùng điện khi tay còn ướt hoặc chân trần trên nền ẩm ướt" },
+          { key: "D", text: "Dùng găng tay cách điện khi sử dụng các công cụ điện cầm tay." }
+        ],
+        correct: "B",
+        explanation: "Sử dụng thiết bị khi đang sạc tiềm ẩn nguy cơ rò điện, quá nhiệt hoặc cháy nổ pin; các phương án còn lại đều là biện pháp an toàn."
+      },
+      {
+        id: 6,
+        question: "Cần phải sử dụng tiết kiệm điện năng vì:",
+        options: [
+          { key: "A", text: "Dùng nhiều điện ở gia đình dễ gây ô nhiễm môi trường." },
+          { key: "B", text: "Dùng nhiều điện dễ gây tai nạn nguy hiểm tới tính mạng con người" },
+          { key: "C", text: "Như vậy sẽ giảm bớt chi phí cho gia đình và dành nhiều điện năng cho sản xuất." },
+          { key: "D", text: "Càng dùng nhiều điện thì tổn hao vô ích càng lớn và càng tốn kém cho gia đình và cho xã hội." }
+        ],
+        correct: "D",
+        explanation: "Sử dụng điện không hợp lý, lãng phí làm tăng tổn hao vô ích trên đường dây/thiết bị và gây tốn kém kinh tế cho gia đình lẫn xã hội."
+      },
+      {
+        id: 7,
+        question: "Cách sử dụng đèn thắp sáng nào dưới đây không tiết kiệm điện năng?",
+        options: [
+          { key: "A", text: "Bật đèn cả khi phòng có đủ ánh sáng tự nhiên chiếu vào" },
+          { key: "B", text: "Tắt đèn khi ra khỏi phòng quá 15 phút" },
+          { key: "C", text: "Dùng bóng đèn compact thay cho bóng đèn dây tóc" },
+          { key: "D", text: "Chỉ bật bóng đèn đủ sáng gần nơi sử dụng." }
+        ],
+        correct: "A",
+        explanation: "Tận dụng ánh sáng tự nhiên giúp giảm chiếu sáng nhân tạo; bật đèn khi phòng đã đủ sáng là thói quen lãng phí điện."
+      },
+      {
+        id: 8,
+        question: "Trong lựa chọn thiết bị và đồ dùng điện, để đảm bảo tiết kiệm điện năng, cần lựa chọn thiết bị và đồ dùng điện có:",
+        options: [
+          { key: "A", text: "chức năng hẹn giờ." },
+          { key: "B", text: "thời gian bảo hành lâu." },
+          { key: "C", text: "có công suất lớn" },
+          { key: "D", text: "giá thành thấp." }
+        ],
+        correct: "A",
+        explanation: "Chức năng hẹn giờ giúp thiết bị tự ngắt đúng lúc, tránh hoạt động dư thừa gây hao phí điện năng."
+      },
+      {
+        id: 9,
+        question: "Hành động nào sau đây không an toàn với người sử dụng đồ điện trong gia đình?",
+        options: [
+          { key: "A", text: "Cắm phích điện, đóng cầu dao khi tay người đang bị ướt." },
+          { key: "B", text: "Sửa chữa hoặc thay thế ngay nếu đồ dùng điện bị hư hỏng" },
+          { key: "C", text: "Sử dụng bút thử điện để kiểm tra" },
+          { key: "D", text: "Nạp điện đúng cách cho các đồ dùng điện có chức năng nạp điện." }
+        ],
+        correct: "A",
+        explanation: "Nước làm giảm điện trở cơ thể và tăng nguy cơ dẫn điện; thao tác với phích cắm hoặc cầu dao khi tay ướt rất dễ bị điện giật."
+      },
+      {
+        id: 10,
+        question: "Quan sát nhãn năng lượng (Hình 1: 1 sao, Hình 2: 2 sao, Hình 3: 3 sao, Hình 4: 4 sao) và cho biết thiết bị nào tiết kiệm điện nhất?",
+        visualType: "energy_labels",
+        options: [
+          { key: "A", text: "Hình 1" },
+          { key: "B", text: "Hình 2" },
+          { key: "C", text: "Hình 3" },
+          { key: "D", text: "Hình 4" }
+        ],
+        correct: "D",
+        explanation: "Trên nhãn năng lượng Việt Nam, số sao càng nhiều (tối đa 5 sao) thì hiệu suất năng lượng càng cao và thiết bị càng tiết kiệm điện. Hình 4 có 4 sao nên tiết kiệm điện nhất trong 4 hình."
+      },
+      {
+        id: 11,
+        question: "Để tiết kiệm điện khi sử dụng điều hòa cần:",
+        options: [
+          { key: "A", text: "đặt nhiệt độ điều hòa phù hợp với nhiệt độ ngoài trời và sử dụng kết hợp với quạt điện để phân bố đồng đều hơi lạnh" },
+          { key: "B", text: "tắt điều hòa ngay khi nhiệt độ phòng đã đủ độ lạnh và bật lại máy khi thấy nhiệt độ trong phòng nóng lại" },
+          { key: "C", text: "điều chỉnh nhiệt độ điều hòa ở mức thấp nhất để làm lạnh nhanh chóng và bật tắt nhiều lần trong ngày" },
+          { key: "D", text: "điều chỉnh hướng gió điều hòa cho phù hợp với không gian và tắt điều hòa khi nhiệt độ phòng đã đủ độ lạnh." }
+        ],
+        correct: "A",
+        explanation: "Đặt nhiệt độ chênh lệch hợp lý và dùng thêm quạt giúp lưu thông khí lạnh đều khắp phòng, cho cảm giác mát nhanh mà không cần hạ nhiệt độ quá sâu."
+      },
+      {
+        id: 12,
+        question: "Biện pháp nào không an toàn trong thiết kế, lắp đặt điện?",
+        options: [
+          { key: "A", text: "Lựa chọn dây dẫn điện có thông số điện áp phù hợp với điện áp của hệ thống." },
+          { key: "B", text: "Nối đất vỏ kim loại của thiết bị điện trong gia đình." },
+          { key: "C", text: "Thiết bị đóng cắt bảo vệ được lắp đặt ở vị trí dễ quan sát." },
+          { key: "D", text: "Chỉ cần lắp thiết bị chống sét cho các tòa nhà, công trình ở những nơi thưa vắng." }
+        ],
+        correct: "D",
+        explanation: "Thiết bị chống sét cần được lắp đặt cho các công trình có nguy cơ sét đánh (nhà cao tầng, khu vực trống trải, công trình đặc thù...) chứ không chỉ ở nơi thưa vắng."
+      },
+      {
+        id: 13,
+        question: "Sử dụng máy giặt, máy sấy quần áo như thế nào giúp hiệu quả và tiết kiệm điện?",
+        options: [
+          { key: "A", text: "Chọn chương trình và mực nước phù hợp" },
+          { key: "B", text: "Sử dụng chế độ giặt nước nóng khi giặt quần áo" },
+          { key: "C", text: "Giặt và sấy với lượng quần áo ít" },
+          { key: "D", text: "Giặt và sấy quần áo trong giờ cao điểm." }
+        ],
+        correct: "A",
+        explanation: "Chọn đúng chương trình và mực nước phù hợp với khối lượng quần áo tránh lãng phí điện và nước. Giặt nước nóng tốn nhiều điện hơn và giặt lắt nhắt nhiều lần cũng kém hiệu quả."
+      },
+      {
+        id: 14,
+        question: "Kí hiệu của điện trở cố định là:",
+        visualType: "resistor_symbols",
+        options: [
+          { key: "A", text: "Hình 1" },
+          { key: "B", text: "Hình 2" },
+          { key: "C", text: "Hình 3" },
+          { key: "D", text: "Hình 4" }
+        ],
+        correct: "A",
+        explanation: "Hình 1 là ký hiệu điện trở cố định (hình chữ nhật cơ bản). Hình 2 là biến trở, Hình 3 là quang trở (có mũi tên ánh sáng), Hình 4 là nhiệt trở."
+      },
+      {
+        id: 15,
+        question: "Linh kiện điện tử có giá trị phụ thuộc vào cường độ chiếu sáng là:",
+        options: [
+          { key: "A", text: "điện trở nhiệt" },
+          { key: "B", text: "điện trở quang" },
+          { key: "C", text: "transistor" },
+          { key: "D", text: "diode." }
+        ],
+        correct: "B",
+        explanation: "Điện trở quang (quang điện trở / LDR) có trị số điện trở thay đổi theo cường độ ánh sáng chiếu vào bề mặt cảm biến."
+      },
+      {
+        id: 16,
+        question: "Thứ tự hình dạng các linh kiện (Hình 1 đến Hình 4) lần lượt là:",
+        visualType: "component_shapes",
+        options: [
+          { key: "A", text: "Điện trở, tụ điện, transistor, IC" },
+          { key: "B", text: "Tụ hóa, diode phát quang, transistor, IC" },
+          { key: "C", text: "Tụ không phân cực, diode phát quang, transistor, IC" },
+          { key: "D", text: "Tụ hóa, quang điện trở, transistor, IC." }
+        ],
+        correct: "B",
+        explanation: "Hình 1 là tụ hóa trụ đứng có vạch cực âm; Hình 2 là diode phát quang (LED); Hình 3 là transistor 3 chân (kiểu vỏ TO-92); Hình 4 là vi mạch tích hợp IC cắm 8 chân (DIP)."
+      },
+      {
+        id: 17,
+        question: "Công dụng của điện trở:",
+        options: [
+          { key: "A", text: "Hạn chế hoặc điều chỉnh dòng điện và phân chia điện áp trong các mạch điện, điện tử" },
+          { key: "B", text: "Ngăn dòng điện một chiều và cho dòng điện xoay chiều đi qua." },
+          { key: "C", text: "Dẫn dòng điện một chiều, cản trở dòng điện cao tần" },
+          { key: "D", text: "Khả năng tích lũy năng lượng từ trường của cuộn cảm khi có dòng điện chạy qua nó." }
+        ],
+        correct: "A",
+        explanation: "Điện trở dùng để hạn chế hoặc điều chỉnh cường độ dòng điện và phân chia điện áp phù hợp cho các phần tử trong mạch."
+      },
+      {
+        id: 18,
+        question: "Giá trị điện trở cho biết:",
+        options: [
+          { key: "A", text: "Mức độ cản trở dòng điện của điện trở" },
+          { key: "B", text: "Khả năng tích lũy năng lượng điện trường của tụ điện khi có điện áp thuận đặt lên hai cực của nó" },
+          { key: "C", text: "Khả năng tích lũy năng lượng từ trường của cuộn cảm khi có dòng điện chạy qua nó" },
+          { key: "D", text: "Mức độ mạnh, yếu của dòng điện." }
+        ],
+        correct: "A",
+        explanation: "Trị số điện trở (đơn vị Ω) đặc trưng cho mức độ cản trở dòng điện của linh kiện đó."
+      },
+      {
+        id: 19,
+        question: "Đọc giá trị của một điện trở có các vòng màu theo thứ tự: nâu, xám, vàng, xanh lục. Trị số đúng của điện trở là:",
+        options: [
+          { key: "A", text: "18 × 10⁴ Ω ±0,5%." },
+          { key: "B", text: "18 × 10⁴ Ω ±1%" },
+          { key: "C", text: "18 × 10³ Ω ±0,5%." },
+          { key: "D", text: "18 × 10³ Ω ±1%." }
+        ],
+        correct: "A",
+        explanation: "Nâu = 1, Xám = 8 (ghép thành 18); Vàng = hệ số nhân ×10⁴; Xanh lục = sai số ±0,5%. Vậy trị số là 18 × 10⁴ Ω ±0,5%."
+      },
+      {
+        id: 20,
+        question: "Một điện trở có giá trị 56 × 10⁹ Ω ±10%. Vạch màu tương ứng theo thứ tự là:",
+        options: [
+          { key: "A", text: "xanh lục, xanh lam, trắng, ngân nhũ" },
+          { key: "B", text: "xanh lục, xanh lam, tím, kim nhũ" },
+          { key: "C", text: "xanh lam, xanh lục, tím, ngân nhũ" },
+          { key: "D", text: "xanh lam, xanh lục, trắng, kim nhũ." }
+        ],
+        correct: "A",
+        explanation: "5 = Xanh lục, 6 = Xanh lam; hệ số nhân ×10⁹ = Trắng; sai số ±10% = Ngân nhũ (bạc). Thứ tự đúng: xanh lục, xanh lam, trắng, ngân nhũ."
+      }
+    ];
 
-                // Các tùy chọn đáp án
-                q.answerOptions.forEach((option, oIndex) => {
-                    const optionDiv = document.createElement('div');
-                    optionDiv.className = 'answer-option p-3 mb-2 border border-gray-300 rounded-lg cursor-pointer transition duration-100 ease-in-out';
-                    optionDiv.innerHTML = `<span class="font-medium mr-2 text-blue-600">${String.fromCharCode(65 + oIndex)}.</span> ${option.text}`;
-                    
-                    optionDiv.onclick = () => handleAnswerClick(qIndex, oIndex);
+    /**
+     * Hàm tạo SVG sao nhỏ cho nhãn năng lượng
+     */
+    function starSvg(filled) {
+      return `
+        <svg viewBox="0 0 24 24" class="w-4 h-4 ${filled ? 'text-amber-400 fill-amber-400' : 'text-slate-300 fill-slate-100'}" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+        </svg>
+      `;
+    }
 
-                    questionDiv.appendChild(optionDiv);
-                });
+    /**
+     * Tạo minh họa SVG trực quan theo từng loại câu hỏi
+     */
+    function renderVisualIllustration(type) {
+      if (type === "energy_labels") {
+        const cards = [
+          { label: "Hình 1", stars: 1 },
+          { label: "Hình 2", stars: 2 },
+          { label: "Hình 3", stars: 3 },
+          { label: "Hình 4", stars: 4 }
+        ];
+        return `
+          <div class="my-4 p-3.5 sm:p-4 rounded-xl bg-slate-50 border border-slate-200">
+            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
+              Minh họa nhãn năng lượng (1 đến 4 sao)
+            </p>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              ${cards.map(c => `
+                <div class="bg-white rounded-xl border border-emerald-200 p-3 flex flex-col items-center text-center shadow-2xs">
+                  <div class="w-full rounded-lg bg-gradient-to-b from-emerald-600 to-emerald-700 text-white py-1 px-2 text-[10px] font-bold tracking-wide mb-2">
+                    NHÃN NĂNG LƯỢNG
+                  </div>
+                  <div class="flex items-center justify-center gap-0.5 my-1.5">
+                    ${[1, 2, 3, 4, 5].map(idx => starSvg(idx <= c.stars)).join("")}
+                  </div>
+                  <span class="text-[11px] font-semibold text-emerald-700 mt-1">${c.stars} sao</span>
+                  <span class="text-xs font-bold text-slate-800 mt-1.5">${c.label}</span>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        `;
+      }
 
-                // Vùng giải thích (Rationale)
-                const rationaleDiv = document.createElement('div');
-                rationaleDiv.className = 'rationale mt-4 p-3 border-l-4 border-gray-400 bg-gray-50 rounded-r-lg text-sm text-gray-700';
-                rationaleDiv.id = `rationale-${qIndex}`;
-                questionDiv.appendChild(rationaleDiv);
+      if (type === "resistor_symbols") {
+        return `
+          <div class="my-4 p-3.5 sm:p-4 rounded-xl bg-slate-50 border border-slate-200">
+            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
+              Minh họa ký hiệu các loại điện trở
+            </p>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <!-- Hình 1: Điện trở cố định -->
+              <div class="bg-white rounded-xl border border-slate-200 p-3 flex flex-col items-center">
+                <svg viewBox="0 0 140 60" class="w-full h-14 text-sky-700">
+                  <line x1="8" y1="30" x2="35" y2="30" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                  <rect x="35" y="18" width="70" height="24" rx="2" fill="#f0f9ff" stroke="currentColor" stroke-width="2.5"/>
+                  <line x1="105" y1="30" x2="132" y2="30" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                </svg>
+                <span class="text-xs font-bold text-slate-800 mt-1">Hình 1</span>
+              </div>
 
-                quizContainer.appendChild(questionDiv);
-            });
-        };
+              <!-- Hình 2: Biến trở -->
+              <div class="bg-white rounded-xl border border-slate-200 p-3 flex flex-col items-center">
+                <svg viewBox="0 0 140 60" class="w-full h-14 text-sky-700">
+                  <line x1="8" y1="36" x2="35" y2="36" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                  <rect x="35" y="24" width="70" height="24" rx="2" fill="#f0f9ff" stroke="currentColor" stroke-width="2.5"/>
+                  <line x1="105" y1="36" x2="132" y2="36" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                  <line x1="70" y1="5" x2="70" y2="21" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                  <polyline points="63,15 70,22 77,15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="text-xs font-bold text-slate-800 mt-1">Hình 2</span>
+              </div>
 
-        // Hàm xử lý nộp bài và hiển thị kết quả
-        const handleSubmit = () => {
-            if (isSubmitted) return;
-            isSubmitted = true;
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Đã Nộp Bài';
-            submitBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
-            submitBtn.classList.add('bg-gray-500');
+              <!-- Hình 3: Quang trở -->
+              <div class="bg-white rounded-xl border border-slate-200 p-3 flex flex-col items-center">
+                <svg viewBox="0 0 140 60" class="w-full h-14 text-sky-700">
+                  <circle cx="70" cy="34" r="20" fill="#f0f9ff" stroke="currentColor" stroke-width="2"/>
+                  <line x1="10" y1="34" x2="42" y2="34" stroke="currentColor" stroke-width="2.2"/>
+                  <rect x="42" y="27" width="56" height="14" rx="1" fill="#ffffff" stroke="currentColor" stroke-width="2"/>
+                  <line x1="98" y1="34" x2="130" y2="34" stroke="currentColor" stroke-width="2.2"/>
+                  <line x1="34" y1="5" x2="48" y2="16" stroke="#0284c7" stroke-width="2" stroke-linecap="round"/>
+                  <polyline points="42,16 49,17 48,10" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <line x1="48" y1="3" x2="62" y2="14" stroke="#0284c7" stroke-width="2" stroke-linecap="round"/>
+                  <polyline points="56,14 63,15 62,8" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="text-xs font-bold text-slate-800 mt-1">Hình 3</span>
+              </div>
 
-            let correctCount = 0;
-            quizContainer.classList.add('show-results');
+              <!-- Hình 4: Nhiệt trở -->
+              <div class="bg-white rounded-xl border border-slate-200 p-3 flex flex-col items-center">
+                <svg viewBox="0 0 140 60" class="w-full h-14 text-sky-700">
+                  <line x1="8" y1="30" x2="35" y2="30" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                  <rect x="35" y="18" width="70" height="24" rx="2" fill="#f0f9ff" stroke="currentColor" stroke-width="2.5"/>
+                  <line x1="105" y1="30" x2="132" y2="30" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                  <polyline points="46,48 56,48 86,12 96,12" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="text-xs font-bold text-slate-800 mt-1">Hình 4</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }
 
-            quizData.questions.forEach((q, qIndex) => {
-                const selectedOptionIndex = userAnswers[qIndex];
-                const questionElement = document.getElementById(`q-${qIndex}`);
-                const options = questionElement.querySelectorAll('.answer-option');
-                const rationaleDiv = document.getElementById(`rationale-${qIndex}`);
+      if (type === "component_shapes") {
+        return `
+          <div class="my-4 p-3.5 sm:p-4 rounded-xl bg-slate-50 border border-slate-200">
+            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
+              Minh họa hình dạng linh kiện điện tử
+            </p>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <!-- Hình 1: Tụ hóa trụ đứng có vạch cực -->
+              <div class="bg-white rounded-xl border border-slate-200 p-3 flex flex-col items-center">
+                <svg viewBox="0 0 120 75" class="w-full h-16">
+                  <line x1="46" y1="50" x2="46" y2="70" stroke="#64748b" stroke-width="2.5" stroke-linecap="round"/>
+                  <line x1="74" y1="50" x2="74" y2="70" stroke="#64748b" stroke-width="2.5" stroke-linecap="round"/>
+                  <rect x="34" y="12" width="52" height="38" rx="6" fill="#0f766e" stroke="#115e59" stroke-width="2"/>
+                  <rect x="68" y="13" width="12" height="36" rx="2" fill="#cbd5e1" opacity="0.85"/>
+                  <text x="74" y="26" text-anchor="middle" font-size="10" font-weight="bold" fill="#0f172a">-</text>
+                  <text x="50" y="34" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#f0fdfa">100µF</text>
+                </svg>
+                <span class="text-xs font-bold text-slate-800 mt-1">Hình 1</span>
+              </div>
 
-                // Hiển thị phần giải thích
-                rationaleDiv.style.display = 'block';
-                rationaleDiv.innerHTML = '<strong>Giải thích:</strong> ';
+              <!-- Hình 2: Diode phát quang (LED) -->
+              <div class="bg-white rounded-xl border border-slate-200 p-3 flex flex-col items-center">
+                <svg viewBox="0 0 120 75" class="w-full h-16">
+                  <line x1="48" y1="44" x2="48" y2="70" stroke="#64748b" stroke-width="2.5" stroke-linecap="round"/>
+                  <line x1="72" y1="44" x2="72" y2="70" stroke="#64748b" stroke-width="2.5" stroke-linecap="round"/>
+                  <path d="M38 42 L38 28 A22 20 0 0 1 82 28 L82 42 Z" fill="#22c55e" fill-opacity="0.85" stroke="#15803d" stroke-width="2"/>
+                  <rect x="34" y="40" width="52" height="5" rx="2" fill="#16a34a"/>
+                  <ellipse cx="53" cy="22" rx="5" ry="9" transform="rotate(-18 53 22)" fill="#bbf7d0" opacity="0.65"/>
+                </svg>
+                <span class="text-xs font-bold text-slate-800 mt-1">Hình 2</span>
+              </div>
 
-                let isCorrect = false;
-                
-                q.answerOptions.forEach((option, oIndex) => {
-                    const optionElement = options[oIndex];
-                    
-                    // 1. Đánh dấu đáp án đúng
-                    if (option.isCorrect) {
-                        optionElement.classList.add('is-correct');
-                        rationaleDiv.innerHTML += option.rationale;
-                        if (selectedOptionIndex === oIndex) {
-                            isCorrect = true;
-                        }
-                    }
+              <!-- Hình 3: Transistor 3 chân TO-92 -->
+              <div class="bg-white rounded-xl border border-slate-200 p-3 flex flex-col items-center">
+                <svg viewBox="0 0 120 75" class="w-full h-16">
+                  <line x1="42" y1="44" x2="42" y2="70" stroke="#64748b" stroke-width="2.3" stroke-linecap="round"/>
+                  <line x1="60" y1="44" x2="60" y2="70" stroke="#64748b" stroke-width="2.3" stroke-linecap="round"/>
+                  <line x1="78" y1="44" x2="78" y2="70" stroke="#64748b" stroke-width="2.3" stroke-linecap="round"/>
+                  <path d="M34 44 L34 26 A26 18 0 0 1 86 26 L86 44 Z" fill="#1e293b" stroke="#0f172a" stroke-width="2"/>
+                  <line x1="34" y1="41" x2="86" y2="41" stroke="#475569" stroke-width="2"/>
+                  <text x="60" y="31" text-anchor="middle" font-size="8" font-weight="bold" fill="#e2e8f0">C945</text>
+                </svg>
+                <span class="text-xs font-bold text-slate-800 mt-1">Hình 3</span>
+              </div>
 
-                    // 2. Đánh dấu đáp án mà người dùng đã chọn
-                    if (selectedOptionIndex === oIndex) {
-                        optionElement.classList.add('selected');
-                        if (isCorrect) {
-                            optionElement.classList.add('answered-correct');
-                        } else {
-                            optionElement.classList.add('answered-incorrect');
-                        }
-                    }
-                });
+              <!-- Hình 4: IC 8 chân DIP -->
+              <div class="bg-white rounded-xl border border-slate-200 p-3 flex flex-col items-center">
+                <svg viewBox="0 0 120 75" class="w-full h-16">
+                  <!-- Chân trái -->
+                  <rect x="24" y="18" width="12" height="4" rx="1" fill="#94a3b8"/>
+                  <rect x="24" y="28" width="12" height="4" rx="1" fill="#94a3b8"/>
+                  <rect x="24" y="38" width="12" height="4" rx="1" fill="#94a3b8"/>
+                  <rect x="24" y="48" width="12" height="4" rx="1" fill="#94a3b8"/>
+                  <!-- Chân phải -->
+                  <rect x="84" y="18" width="12" height="4" rx="1" fill="#94a3b8"/>
+                  <rect x="84" y="28" width="12" height="4" rx="1" fill="#94a3b8"/>
+                  <rect x="84" y="38" width="12" height="4" rx="1" fill="#94a3b8"/>
+                  <rect x="84" y="48" width="12" height="4" rx="1" fill="#94a3b8"/>
+                  <!-- Thân IC -->
+                  <rect x="36" y="12" width="48" height="48" rx="4" fill="#1e293b" stroke="#0f172a" stroke-width="2"/>
+                  <path d="M55 12 A5 5 0 0 0 65 12" fill="#0f172a"/>
+                  <circle cx="44" cy="20" r="2.2" fill="#64748b"/>
+                  <text x="60" y="39" text-anchor="middle" font-size="9" font-weight="bold" fill="#cbd5e1">IC DIP</text>
+                </svg>
+                <span class="text-xs font-bold text-slate-800 mt-1">Hình 4</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }
 
-                if (isCorrect) {
-                    correctCount++;
-                }
+      return "";
+    }
 
-                // Vô hiệu hóa tất cả các sự kiện click
-                options.forEach(opt => opt.onclick = null);
-            });
+    let isSubmitted = false;
+    const userAnswers = {}; // { [questionId]: "A" | "B" | "C" | "D" }
 
-            // Hiển thị tóm tắt kết quả
-            resultSummary.classList.remove('hidden');
-            scoreText.textContent = `Bạn đã trả lời đúng ${correctCount} trên tổng số ${totalQuestions} câu hỏi.`;
-            
-            if (correctCount === totalQuestions) {
-                feedbackText.textContent = 'Xuất sắc! Bạn đã nắm vững kiến thức về Mạng điện Sản xuất Quy mô Nhỏ.';
-                feedbackText.classList.add('text-green-600');
-            } else if (correctCount >= totalQuestions * 0.75) {
-                feedbackText.textContent = 'Rất tốt! Bạn cần xem lại một vài điểm nhỏ để đạt điểm tối đa.';
-                feedbackText.classList.add('text-yellow-600');
-            } else {
-                feedbackText.textContent = 'Bạn nên xem lại toàn bộ bài giảng để củng cố kiến thức tốt hơn.';
-                feedbackText.classList.add('text-red-600');
-            }
-        };
+    /**
+     * Render toàn bộ 20 câu hỏi lên trang
+     */
+    function renderQuestions() {
+      const container = document.getElementById("questions-container");
+      container.innerHTML = QUIZ_DATA.map((q) => {
+        const visualHtml = q.visualType ? renderVisualIllustration(q.visualType) : "";
+        const optionsHtml = q.options.map((opt) => {
+          const inputId = `q${q.id}_${opt.key}`;
+          const checked = userAnswers[q.id] === opt.key ? "checked" : "";
+          return `
+            <label
+              for="${inputId}"
+              id="label_q${q.id}_${opt.key}"
+              class="option-label flex items-start gap-3 p-3.5 rounded-xl border border-slate-200 bg-white hover:border-emerald-400 hover:bg-emerald-50/40 cursor-pointer transition-all"
+            >
+              <input
+                type="radio"
+                id="${inputId}"
+                name="question_${q.id}"
+                value="${opt.key}"
+                ${checked}
+                onchange="handleSelectOption(${q.id}, '${opt.key}')"
+                class="mt-0.5 h-4 w-4 accent-emerald-600 cursor-pointer shrink-0"
+              />
+              <span class="text-sm sm:text-[15px] leading-snug text-slate-700">
+                <strong class="font-bold text-slate-900 mr-1">${opt.key}.</strong>
+                ${opt.text}
+              </span>
+            </label>
+          `;
+        }).join("");
 
-        // Gắn sự kiện cho nút Submit
-        submitBtn.addEventListener('click', handleSubmit);
+        return `
+          <article
+            id="question-card-${q.id}"
+            class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-xs transition-all"
+          >
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex items-start gap-3">
+                <span class="inline-flex items-center justify-center min-w-[2rem] h-8 px-2 rounded-lg bg-emerald-100 text-emerald-800 font-bold text-sm shrink-0">
+                  ${q.id}
+                </span>
+                <h3 class="text-base sm:text-[17px] font-bold text-slate-900 leading-snug">
+                  Câu ${q.id}: ${q.question}
+                </h3>
+              </div>
+              <span id="badge-q${q.id}" class="hidden text-xs font-bold px-2.5 py-1 rounded-full shrink-0"></span>
+            </div>
 
-        // Khởi tạo bài Quiz khi tải trang
-        document.addEventListener('DOMContentLoaded', renderQuiz);
-    </script>
+            ${visualHtml}
 
+            <div class="mt-4 space-y-2.5">
+              ${optionsHtml}
+            </div>
+
+            <div id="feedback-q${q.id}" class="hidden mt-4 p-3.5 rounded-xl border text-sm leading-relaxed"></div>
+          </article>
+        `;
+      }).join("");
+
+      updateProgressUI();
+    }
+
+    /**
+     * Xử lý khi người dùng chọn đáp án
+     */
+    function handleSelectOption(questionId, optionKey) {
+      if (isSubmitted) {
+        // Giữ nguyên lựa chọn đã nộp hoặc không cho sửa sau khi nộp để tránh sai lệch kết quả chấm
+        const radio = document.getElementById(`q${questionId}_${optionKey}`);
+        if (radio) radio.checked = userAnswers[questionId] === optionKey;
+        return;
+      }
+
+      userAnswers[questionId] = optionKey;
+      hideNotice();
+
+      // Làm nổi bật lựa chọn hiện tại
+      const qObj = QUIZ_DATA.find(item => item.id === questionId);
+      if (qObj) {
+        qObj.options.forEach(opt => {
+          const lbl = document.getElementById(`label_q${questionId}_${opt.key}`);
+          if (!lbl) return;
+          if (opt.key === optionKey) {
+            lbl.className = "option-label flex items-start gap-3 p-3.5 rounded-xl border-2 border-emerald-500 bg-emerald-50/70 cursor-pointer transition-all";
+          } else {
+            lbl.className = "option-label flex items-start gap-3 p-3.5 rounded-xl border border-slate-200 bg-white hover:border-emerald-400 hover:bg-emerald-50/40 cursor-pointer transition-all";
+          }
+        });
+      }
+
+      updateProgressUI();
+    }
+
+    /**
+     * Cập nhật thanh tiến độ và số câu đã làm
+     */
+    function updateProgressUI() {
+      const total = QUIZ_DATA.length;
+      const answeredCount = Object.keys(userAnswers).length;
+      const percent = Math.round((answeredCount / total) * 100);
+
+      document.getElementById("progress-text").textContent = `Đã làm: ${answeredCount} / ${total} câu`;
+      document.getElementById("progress-bar").style.width = `${percent}%`;
+      document.getElementById("bottom-status").textContent =
+        `Bạn đã trả lời ${answeredCount} trên tổng số ${total} câu hỏi.`;
+    }
+
+    /**
+     * Hiển thị thông báo trên trang (không dùng alert)
+     */
+    function showNotice(message, type = "warn") {
+      const banner = document.getElementById("notice-banner");
+      banner.classList.remove("hidden", "bg-amber-50", "border-amber-300", "text-amber-900", "bg-emerald-50", "border-emerald-300", "text-emerald-900");
+      if (type === "warn") {
+        banner.classList.add("bg-amber-50", "border-amber-300", "text-amber-900");
+      } else {
+        banner.classList.add("bg-emerald-50", "border-emerald-300", "text-emerald-900");
+      }
+      banner.innerHTML = message;
+      banner.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    function hideNotice() {
+      const banner = document.getElementById("notice-banner");
+      banner.classList.add("hidden");
+    }
+
+    /**
+     * Xử lý bấm nút Nộp bài: nếu còn câu chưa làm thì cảnh báo nhẹ nhàng kèm nút nộp luôn
+     */
+    function handleSubmitClick() {
+      if (isSubmitted) {
+        document.getElementById("result-summary").scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+
+      const unanswered = QUIZ_DATA
+        .filter(q => !userAnswers[q.id])
+        .map(q => q.id);
+
+      if (unanswered.length > 0) {
+        const previewList = unanswered.slice(0, 6).map(n => `Câu ${n}`).join(", ");
+        const extra = unanswered.length > 6 ? ` và ${unanswered.length - 6} câu khác` : "";
+        showNotice(
+          `<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <span>Bạn còn <strong>${unanswered.length}</strong> câu chưa trả lời (${previewList}${extra}). Bạn vẫn muốn nộp bài ngay chứ?</span>
+            <button type="button" onclick="submitQuiz()" class="px-4 py-1.5 rounded-lg bg-amber-700 hover:bg-amber-800 text-white font-semibold text-xs shrink-0 transition">
+              Xác nhận nộp bài
+            </button>
+          </div>`,
+          "warn"
+        );
+        return;
+      }
+
+      submitQuiz();
+    }
+
+    /**
+     * Chấm điểm, hiển thị đáp án đúng/sai và giải thích cho từng câu
+     */
+    function submitQuiz() {
+      hideNotice();
+      isSubmitted = true;
+
+      let correctCount = 0;
+      let firstWrongId = null;
+
+      QUIZ_DATA.forEach((q) => {
+        const chosen = userAnswers[q.id];
+        const isCorrect = chosen === q.correct;
+        if (isCorrect) {
+          correctCount++;
+        } else if (firstWrongId === null) {
+          firstWrongId = q.id;
+        }
+
+        const card = document.getElementById(`question-card-${q.id}`);
+        const badge = document.getElementById(`badge-q${q.id}`);
+        const feedback = document.getElementById(`feedback-q${q.id}`);
+
+        // Vô hiệu hóa radio inputs sau khi nộp
+        q.options.forEach(opt => {
+          const input = document.getElementById(`q${q.id}_${opt.key}`);
+          const lbl = document.getElementById(`label_q${q.id}_${opt.key}`);
+          if (input) input.disabled = true;
+          if (!lbl) return;
+
+          lbl.classList.remove("cursor-pointer", "hover:border-emerald-400", "hover:bg-emerald-50/40");
+          lbl.classList.add("cursor-default");
+
+          if (opt.key === q.correct) {
+            lbl.className = "option-label flex items-start gap-3 p-3.5 rounded-xl border-2 border-emerald-500 bg-emerald-50 cursor-default transition-all";
+          } else if (opt.key === chosen && opt.key !== q.correct) {
+            lbl.className = "option-label flex items-start gap-3 p-3.5 rounded-xl border-2 border-rose-500 bg-rose-50 cursor-default transition-all";
+          } else {
+            lbl.className = "option-label flex items-start gap-3 p-3.5 rounded-xl border border-slate-200 bg-slate-50/60 opacity-80 cursor-default transition-all";
+          }
+        });
+
+        // Huy hiệu trên từng câu hỏi
+        badge.classList.remove("hidden", "bg-emerald-100", "text-emerald-800", "bg-rose-100", "text-rose-800", "bg-amber-100", "text-amber-800");
+        if (isCorrect) {
+          card.className = "bg-white rounded-2xl border-2 border-emerald-300 p-5 sm:p-6 shadow-xs transition-all";
+          badge.classList.add("bg-emerald-100", "text-emerald-800");
+          badge.textContent = "✓ Đúng";
+        } else {
+          card.className = "bg-white rounded-2xl border-2 border-rose-300 p-5 sm:p-6 shadow-xs transition-all";
+          badge.classList.add(chosen ? "bg-rose-100" : "bg-amber-100", chosen ? "text-rose-800" : "text-amber-800");
+          badge.textContent = chosen ? "✕ Sai" : "• Chưa làm";
+        }
+
+        // Khung giải thích ngắn gọn
+        feedback.classList.remove("hidden", "bg-emerald-50", "border-emerald-200", "text-emerald-950", "bg-rose-50", "border-rose-200", "text-rose-950");
+        if (isCorrect) {
+          feedback.classList.add("bg-emerald-50", "border-emerald-200", "text-emerald-950");
+          feedback.innerHTML = `
+            <p class="font-bold text-emerald-800 mb-1">Chính xác! Đáp án đúng là ${q.correct}.</p>
+            <p class="text-slate-700">${q.explanation}</p>
+          `;
+        } else {
+          feedback.classList.add("bg-rose-50", "border-rose-200", "text-rose-950");
+          const chosenText = chosen ? `Bạn chọn <strong>${chosen}</strong>.` : `Bạn chưa chọn đáp án.`;
+          feedback.innerHTML = `
+            <p class="font-bold text-rose-800 mb-1">${chosenText} Đáp án đúng là <strong class="text-emerald-800">${q.correct}</strong>.</p>
+            <p class="text-slate-700">${q.explanation}</p>
+          `;
+        }
+      });
+
+      // Tính điểm thang 10
+      const total = QUIZ_DATA.length;
+      const scoreTen = ((correctCount / total) * 10).toFixed(1).replace(".", ",");
+      const summarySection = document.getElementById("result-summary");
+      summarySection.classList.remove("hidden");
+
+      document.getElementById("score-heading").textContent = `Điểm số: ${scoreTen} / 10`;
+      document.getElementById("score-detail").textContent =
+        `Trả lời đúng ${correctCount} / ${total} câu hỏi (${Math.round((correctCount / total) * 100)}%).`;
+
+      let remark = "";
+      if (correctCount >= 18) {
+        remark = "Xuất sắc! Bạn nắm rất vững kiến thức về an toàn điện, tiết kiệm điện và linh kiện điện tử.";
+      } else if (correctCount >= 14) {
+        remark = "Khá tốt! Hãy xem lại phần giải thích của các câu chưa đúng để hoàn thiện kiến thức nhé.";
+      } else if (correctCount >= 10) {
+        remark = "Đạt mức trung bình. Bạn nên đọc kỹ giải thích từng câu và làm lại để nâng cao kết quả.";
+      } else {
+        remark = "Hãy xem lại phần giải thích bên dưới từng câu hỏi rồi bấm Làm lại để luyện tập thêm nhé!";
+      }
+      document.getElementById("score-feedback").textContent = remark;
+
+      const jumpWrongBtn = document.getElementById("jump-wrong-btn");
+      if (firstWrongId !== null) {
+        jumpWrongBtn.classList.remove("hidden");
+        jumpWrongBtn.dataset.targetId = String(firstWrongId);
+      } else {
+        jumpWrongBtn.classList.add("hidden");
+      }
+
+      // Cập nhật trạng thái nút Nộp bài
+      document.getElementById("top-submit-btn").textContent = "Đã nộp bài";
+      document.getElementById("bottom-submit-btn").textContent = "Đã nộp bài";
+
+      summarySection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    /**
+     * Cuộn tới câu trả lời sai đầu tiên
+     */
+    function scrollToFirstWrong() {
+      const btn = document.getElementById("jump-wrong-btn");
+      const id = btn.dataset.targetId;
+      if (!id) return;
+      const el = document.getElementById(`question-card-${id}`);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+
+    /**
+     * Làm lại toàn bộ bài kiểm tra
+     */
+    function resetQuiz() {
+      isSubmitted = false;
+      Object.keys(userAnswers).forEach(k => delete userAnswers[k]);
+
+      document.getElementById("result-summary").classList.add("hidden");
+      document.getElementById("jump-wrong-btn").classList.add("hidden");
+      document.getElementById("top-submit-btn").textContent = "Nộp bài";
+      document.getElementById("bottom-submit-btn").textContent = "Nộp bài";
+      hideNotice();
+
+      renderQuestions();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // Khởi tạo bài kiểm tra khi tải trang
+    document.addEventListener("DOMContentLoaded", renderQuestions);
+  </script>
 </body>
 </html>
